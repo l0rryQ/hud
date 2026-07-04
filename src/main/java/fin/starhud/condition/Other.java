@@ -16,7 +16,7 @@ public class Other {
     }
 
     public static boolean isInSingleplayer(String ignored) {
-        return CLIENT.isSingleplayer();
+        return CLIENT.isLocalServer();
     }
 
     public static boolean isOnServer(String arg) {
