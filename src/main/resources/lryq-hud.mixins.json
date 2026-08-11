@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "package": "ru.l0rryq.hud.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "MixinClientPlayNetworkHandler",
+    "MixinInGameHUD",
+    "MixinPlayerListHud",
+    "accessor.AccessorBossBarHud",
+    "accessor.AccessorChatHud",
+    "accessor.AccessorInGameHUD"
+  ],
+  "mixins": [
+    "MixinLivingEntity",
+    "MixinStatusEffectOverlay",
+    "accessor.AccessorPlayerListHud"
+  ]
+}

@@ -1,0 +1,56 @@
+package ru.l0rryq.hud.config.hud.other;
+
+import ru.l0rryq.hud.config.BaseHUDSettings;
+import ru.l0rryq.hud.helper.GrowthDirectionX;
+import ru.l0rryq.hud.helper.GrowthDirectionY;
+import ru.l0rryq.hud.helper.ScreenAlignmentX;
+import ru.l0rryq.hud.helper.ScreenAlignmentY;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
+
+public class TargetedCrosshairSettings {
+
+    @ConfigEntry.Gui.TransitiveObject
+    public BaseHUDSettings base = new BaseHUDSettings(true, 0, 56, ScreenAlignmentX.CENTER, ScreenAlignmentY.TOP, GrowthDirectionX.CENTER, GrowthDirectionY.DOWN);
+
+    @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
+    public InformationMode informationMode = InformationMode.BOTH;
+
+    @ConfigEntry.ColorPicker
+    public int modNameColor = 0xddebf5;
+
+    @ConfigEntry.ColorPicker
+    public int targetedNameColor = 0xFFFFFF;
+
+    @ConfigEntry.Gui.CollapsibleObject
+    public Colors entityColors = new Colors();
+
+    public InformationMode getInformationMode() {
+        if (informationMode == null)
+            informationMode = InformationMode.BOTH;
+        return informationMode;
+    }
+
+    public enum InformationMode {
+        TARGETED_NAME,
+        MOD_NAME,
+        BOTH
+    }
+
+    public static class Colors {
+        @ConfigEntry.ColorPicker
+        public int hostile = 0xF6A5A5;
+
+        @ConfigEntry.ColorPicker
+        public int angerable = 0xF7D6B7;
+
+        @ConfigEntry.ColorPicker
+        public int passive = 0xcbf0d8;
+
+        @ConfigEntry.ColorPicker
+        public int player = 0xA8D8EA;
+
+        @ConfigEntry.ColorPicker
+        public int unknown = 0xC5C3D4;
+    }
+
+}

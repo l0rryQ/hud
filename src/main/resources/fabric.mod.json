@@ -1,8 +1,8 @@
 {
 	"schemaVersion": 1,
-	"id": "starhud",
+	"id": "lryq-hud",
 	"version": "${version}",
-	"name": "StarHUD",
+	"name": "l0rryq's hud",
 	"description": "a mod that provides fancy and fresh HUDs",
 	"authors": [
 		"Finside"
@@ -11,18 +11,18 @@
 		"sources": "https://github.com/Finsider/starhud"
 	},
 	"license": "MIT",
-	"icon": "assets/starhud/icon.png",
+	"icon": "assets/lryq-hud/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"client": [
-			"fin.starhud.Main"
+			"ru.l0rryq.hud.Main"
 		],
 		"modmenu" : [
-			"fin.starhud.config.ModMenuIntegration"
+			"ru.l0rryq.hud.config.ModMenuIntegration"
 		]
 	},
 	"mixins": [
-		"starhud.mixins.json"
+		"lryq-hud.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.16.9",
