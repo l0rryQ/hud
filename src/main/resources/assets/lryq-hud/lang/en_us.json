@@ -134,6 +134,8 @@
   "lryq_hud.option.childOrdering.height_descending": "Height, Desc",
 
   "text.autoconfig.lryq_hud.category.general": "General",
+  "text.autoconfig.lryq_hud.category.server_ip": "Server IP",
+  "text.autoconfig.lryq_hud.category.custom_elements": "Custom Elements",
 
   "text.autoconfig.lryq_hud.option.generalSettings.screenSettings" : "Screen Settings",
   "text.autoconfig.lryq_hud.option.generalSettings.screenSettings.shouldBatchHUDWithImmediatelyFast" : "Batch HUD With ImmediatelyFast",
