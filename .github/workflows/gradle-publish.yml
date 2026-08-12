@@ -33,7 +33,7 @@ jobs:
       - name: Extract mod version
         id: get_version
         run: |
-          # Читаем mod_version=... из gradle.properties
+          # reading mod_version=... from gradle.properties
           VERSION=$(grep -i "mod_version" gradle.properties | cut -d'=' -f2 | tr -d ' \r')
           echo "MOD_VERSION=$VERSION" >> $GITHUB_ENV
 
@@ -44,8 +44,8 @@ jobs:
           tag_name: "v${{ env.MOD_VERSION }}-b${{ github.run_number }}"
           name: "Release v${{ env.MOD_VERSION }} (Build #${{ github.run_number }})"
           body: |
-            Автоматическая сборка для коммита `${{ github.sha }}`.
-            Сообщение коммита: ${{ github.event.head_commit.message }}
+            auto build for commit `${{ github.sha }}`.
+            commit msg: ${{ github.event.head_commit.message }}
           draft: false
           prerelease: false
           files: build/libs/!(*-@(dev|sources|javadoc)).jar
