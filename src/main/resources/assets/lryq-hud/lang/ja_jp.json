@@ -1,6 +1,7 @@
 {
   "text.autoconfig.lryq_hud.title": "l0rryq's hud 設定",
 
+  "key.category.lryq-hud.category": "l0rryq's hud",
   "key.category.lryq_hud.category" : "l0rryq's hud",
   "key.lryq_hud.open_edithud": "HUD編集画面を開く",
   "key.lryq_hud.toggle_hud": "ゲーム内HUDの切り替え",
