@@ -1,0 +1,29 @@
+package ru.l0rryq.hud.init;
+
+import com.mojang.blaze3d.platform.InputConstants;
+import ru.l0rryq.hud.Main;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.Identifier;
+import org.lwjgl.glfw.GLFW;
+
+public class KeybindInit {
+
+    public static void init() {
+        Main.keyCategory = KeyMapping.Category.register(Identifier.fromNamespaceAndPath("lryq-hud", "category"));
+
+        Main.openEditHUDKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "key.lryq_hud.open_edithud",
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_RIGHT_SHIFT,
+                Main.keyCategory
+        ));
+
+        Main.toggleHUDKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "key.lryq_hud.toggle_hud",
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_UNKNOWN,
+                Main.keyCategory
+        ));
+    }
+}
