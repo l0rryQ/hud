@@ -2,6 +2,8 @@
   "text.autoconfig.lryq_hud.title": "Настройка l0rryq's hud",
   "modmenu.descriptionTranslation.lryq_hud":"Мод, который предоставляет модные и свежие HUD'ы",
 
+  "key.category.lryq-hud.category": "l0rryq's hud",
+  "key.category.lryq_hud.category": "l0rryq's hud",
   "category.lryq_hud" : "l0rryq's hud",
   "key.lryq_hud.open_edithud": "Открыть экран редактирования HUD",
   "key.lryq_hud.toggle_hud": "Переключить отображение HUD",

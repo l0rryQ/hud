@@ -1,6 +1,7 @@
 {
   "text.autoconfig.lryq_hud.title": "l0rryq's hud Configuration",
 
+  "key.category.lryq-hud.category": "l0rryq's hud",
   "key.category.lryq_hud.category" : "l0rryq's hud",
   "key.lryq_hud.open_edithud": "Open HUD Edit Screen",
   "key.lryq_hud.toggle_hud": "Toggle HUD In Game",

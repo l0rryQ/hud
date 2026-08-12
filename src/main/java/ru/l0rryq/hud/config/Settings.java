@@ -104,22 +104,22 @@ public class Settings implements ConfigData{
     public static class Armor {
         @ConfigEntry.Gui.CollapsibleObject
         public ArmorSettings helmet = new ArmorSettings(
-                new BaseHUDSettings(true, 24, -42, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
+                new BaseHUDSettings(false, 24, -42, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
         );
 
         @ConfigEntry.Gui.CollapsibleObject
         public ArmorSettings chestplate = new ArmorSettings(
-                new BaseHUDSettings(true, 24, -14, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
+                new BaseHUDSettings(false, 24, -14, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
         );
 
         @ConfigEntry.Gui.CollapsibleObject
         public ArmorSettings leggings = new ArmorSettings(
-                new BaseHUDSettings(true, 24, 14, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
+                new BaseHUDSettings(false, 24, 14, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
         );
 
         @ConfigEntry.Gui.CollapsibleObject
         public ArmorSettings boots = new ArmorSettings(
-                new BaseHUDSettings(true, 24, 42, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
+                new BaseHUDSettings(false, 24, 42, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
         );
 
         @ConfigEntry.Gui.TransitiveObject
@@ -129,19 +129,19 @@ public class Settings implements ConfigData{
     public static class Coord {
         @ConfigEntry.Gui.CollapsibleObject
         public CoordSettings X = new CoordSettings(
-                new BaseHUDSettings(true, 24, 24, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN),
+                new BaseHUDSettings(false, 24, 24, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN),
                 0xFc7871
         );
 
         @ConfigEntry.Gui.CollapsibleObject
         public CoordSettings Y = new CoordSettings(
-                new BaseHUDSettings(true, 24, 52, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN),
+                new BaseHUDSettings(false, 24, 52, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN),
                 0xA6F1AF
         );
 
         @ConfigEntry.Gui.CollapsibleObject
         public CoordSettings Z = new CoordSettings(
-                new BaseHUDSettings(true, 24, 80, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN),
+                new BaseHUDSettings(false, 24, 80, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN),
                 0x6CE1FC
         );
 
@@ -167,13 +167,13 @@ public class Settings implements ConfigData{
     public static class Effect {
         @ConfigEntry.Gui.CollapsibleObject
         public EffectSettings positiveSettings = new EffectSettings(
-                new BaseHUDSettings(true, -24, 24, ScreenAlignmentX.RIGHT, ScreenAlignmentY.TOP, GrowthDirectionX.LEFT, GrowthDirectionY.DOWN),
+                new BaseHUDSettings(false, -24, 24, ScreenAlignmentX.RIGHT, ScreenAlignmentY.TOP, GrowthDirectionX.LEFT, GrowthDirectionY.DOWN),
                 0xCFF5D2
         );
 
         @ConfigEntry.Gui.CollapsibleObject
         public EffectSettings negativeSettings = new EffectSettings(
-                new BaseHUDSettings(true, -24, 92, ScreenAlignmentX.RIGHT, ScreenAlignmentY.TOP, GrowthDirectionX.LEFT, GrowthDirectionY.DOWN),
+                new BaseHUDSettings(false, -24, 92, ScreenAlignmentX.RIGHT, ScreenAlignmentY.TOP, GrowthDirectionX.LEFT, GrowthDirectionY.DOWN),
                 0xDCE8B5
         );
 
@@ -206,10 +206,10 @@ public class Settings implements ConfigData{
 
     public static class Hand {
         @ConfigEntry.Gui.CollapsibleObject
-        public HandSettings leftHandSettings = new HandSettings(true, -12, -120, ScreenAlignmentX.CENTER, ScreenAlignmentY.BOTTOM, GrowthDirectionX.LEFT, GrowthDirectionY.UP,0xffb3b3);
+        public HandSettings leftHandSettings = new HandSettings(false, -12, -120, ScreenAlignmentX.CENTER, ScreenAlignmentY.BOTTOM, GrowthDirectionX.LEFT, GrowthDirectionY.UP,0xffb3b3);
 
         @ConfigEntry.Gui.CollapsibleObject
-        public HandSettings rightHandSettings = new HandSettings(true, 12, -120, ScreenAlignmentX.CENTER, ScreenAlignmentY.BOTTOM, GrowthDirectionX.RIGHT, GrowthDirectionY.UP, 0x87ceeb);
+        public HandSettings rightHandSettings = new HandSettings(false, 12, -120, ScreenAlignmentX.CENTER, ScreenAlignmentY.BOTTOM, GrowthDirectionX.RIGHT, GrowthDirectionY.UP, 0x87ceeb);
 
         @ConfigEntry.Gui.TransitiveObject
         public DurabilitySettings durabilitySettings = new DurabilitySettings();
@@ -237,28 +237,28 @@ public class Settings implements ConfigData{
         ArmorSettings helmet = armorSettings.helmet;
         if (helmet.base == null) {
             armorSettings.helmet = new ArmorSettings(
-                    new BaseHUDSettings(true, 24, -42, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
+                    new BaseHUDSettings(false, 24, -42, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
             );
         }
 
         ArmorSettings chestplate = armorSettings.chestplate;
         if (chestplate.base == null) {
             armorSettings.chestplate = new ArmorSettings(
-                    new BaseHUDSettings(true, 24, -14, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
+                    new BaseHUDSettings(false, 24, -14, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
             );
         }
 
         ArmorSettings leggings = armorSettings.leggings;
         if (leggings.base == null) {
             armorSettings.leggings = new ArmorSettings(
-                    new BaseHUDSettings(true, 24, 14, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
+                    new BaseHUDSettings(false, 24, 14, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
             );
         }
 
         ArmorSettings boots = armorSettings.boots;
         if (boots.base == null) {
             armorSettings.boots = new ArmorSettings(
-                    new BaseHUDSettings(true, 24, 42, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
+                    new BaseHUDSettings(false, 24, 42, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE)
             );
         }
 
@@ -275,7 +275,7 @@ public class Settings implements ConfigData{
         CoordSettings coordX = coordSettings.X;
         if (coordX.base == null) {
             coordSettings.X = new CoordSettings(
-                    new BaseHUDSettings(true, 24, 24, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN),
+                    new BaseHUDSettings(false, 24, 24, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN),
                     0xFc7871
             );
         }
@@ -283,7 +283,7 @@ public class Settings implements ConfigData{
         CoordSettings coordY = coordSettings.Y;
         if (coordY.base == null) {
             coordSettings.Y = new CoordSettings(
-                    new BaseHUDSettings(true, 24, 52, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN),
+                    new BaseHUDSettings(false, 24, 52, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN),
                     0xA6F1AF
             );
         }
@@ -291,7 +291,7 @@ public class Settings implements ConfigData{
         CoordSettings coordZ = coordSettings.Z;
         if (coordZ.base == null) {
             coordSettings.Z = new CoordSettings(
-                    new BaseHUDSettings(true, 24, 80, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN),
+                    new BaseHUDSettings(false, 24, 80, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN),
                     0x6CE1FC
             );
         }
@@ -345,12 +345,12 @@ public class Settings implements ConfigData{
 
         HandSettings leftHand = handSettings.leftHandSettings;
         if (leftHand.base == null) {
-            handSettings.leftHandSettings = new HandSettings(true, -12, -120, ScreenAlignmentX.CENTER, ScreenAlignmentY.BOTTOM, GrowthDirectionX.LEFT, GrowthDirectionY.UP, 0xffb3b3);
+            handSettings.leftHandSettings = new HandSettings(false, -12, -120, ScreenAlignmentX.CENTER, ScreenAlignmentY.BOTTOM, GrowthDirectionX.LEFT, GrowthDirectionY.UP, 0xffb3b3);
         }
 
         HandSettings rightHand = handSettings.rightHandSettings;
         if (rightHand.base == null) {
-            handSettings.rightHandSettings = new HandSettings(true, 12, -120, ScreenAlignmentX.CENTER, ScreenAlignmentY.BOTTOM, GrowthDirectionX.RIGHT, GrowthDirectionY.UP, 0x87ceeb);
+            handSettings.rightHandSettings = new HandSettings(false, 12, -120, ScreenAlignmentX.CENTER, ScreenAlignmentY.BOTTOM, GrowthDirectionX.RIGHT, GrowthDirectionY.UP, 0x87ceeb);
         }
 
         if (handSettings.durabilitySettings == null) {
@@ -360,14 +360,14 @@ public class Settings implements ConfigData{
         EffectSettings positive = effectSettings.positiveSettings;
         if (positive.base == null)
             effectSettings.positiveSettings = new EffectSettings(
-                    new BaseHUDSettings(true, -24, 24, ScreenAlignmentX.RIGHT, ScreenAlignmentY.TOP, GrowthDirectionX.LEFT, GrowthDirectionY.DOWN),
+                    new BaseHUDSettings(false, -24, 24, ScreenAlignmentX.RIGHT, ScreenAlignmentY.TOP, GrowthDirectionX.LEFT, GrowthDirectionY.DOWN),
                     0xCFF5D2
             );
 
         EffectSettings negative = effectSettings.negativeSettings;
         if (negative.base == null)
             effectSettings.negativeSettings = new EffectSettings(
-                    new BaseHUDSettings(true, -24, 92, ScreenAlignmentX.RIGHT, ScreenAlignmentY.TOP, GrowthDirectionX.LEFT, GrowthDirectionY.DOWN),
+                    new BaseHUDSettings(false, -24, 92, ScreenAlignmentX.RIGHT, ScreenAlignmentY.TOP, GrowthDirectionX.LEFT, GrowthDirectionY.DOWN),
                     0xDCE8B5
             );
 
