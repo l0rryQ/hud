@@ -103,6 +103,8 @@
   "lryq_hud.option.childAlignment.end": "Конец",
 
   "text.autoconfig.lryq_hud.category.general": "Главное",
+  "text.autoconfig.lryq_hud.category.server_ip": "IP сервера",
+  "text.autoconfig.lryq_hud.category.custom_elements": "Пользовательские модули",
 
   "text.autoconfig.lryq_hud.option.generalSettings.screenSettings" : "Настройки экрана",
   "text.autoconfig.lryq_hud.option.generalSettings.screenSettings.shouldBatchHUDWithImmediatelyFast" : "Связывать HUD с ImmediatelyFast",

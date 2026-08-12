@@ -90,6 +90,55 @@ public class EditHUDScreen extends Screen {
     private final Box selectedHUDBox = new Box();
     private SnapResult snapResult;
 
+    // Context Menu Fields
+    private boolean contextMenuOpen = false;
+    private int contextMenuX;
+    private int contextMenuY;
+    private int contextMenuWidth;
+    private int contextMenuHeight;
+    private final List<net.minecraft.client.gui.components.events.GuiEventListener> contextMenuWidgets = new ArrayList<>();
+    private AbstractHUD contextMenuTargetHUD = null; // null means empty space
+
+    private <T extends net.minecraft.client.gui.components.events.GuiEventListener & net.minecraft.client.gui.narration.NarratableEntry> T addContextMenuWidget(T widget) {
+        addWidget(widget);
+        contextMenuWidgets.add(widget);
+        return widget;
+    }
+
+    private void closeContextMenu() {
+        if (contextMenuOpen) {
+            for (net.minecraft.client.gui.components.events.GuiEventListener widget : contextMenuWidgets) {
+                removeWidget(widget);
+            }
+            contextMenuWidgets.clear();
+            contextMenuOpen = false;
+            contextMenuTargetHUD = null;
+        }
+    }
+
+    private Component getShouldRenderMessage(AbstractHUD target) {
+        boolean render = target.getSettings().shouldRender();
+        return Component.translatable("lryq_hud.screen.button.display", render ? Component.translatable("lryq_hud.screen.status.on") : Component.translatable("lryq_hud.screen.status.off"));
+    }
+
+    private Component getBackgroundMessage(AbstractHUD target) {
+        boolean bg = target.getSettings().drawBackground;
+        return Component.translatable("lryq_hud.screen.button.background", bg ? Component.translatable("lryq_hud.screen.status.on") : Component.translatable("lryq_hud.screen.status.off"));
+    }
+
+    private Component getShadowMessage(AbstractHUD target) {
+        boolean shadow = target.getSettings().drawTextShadow;
+        return Component.translatable("lryq_hud.screen.button.shadow", shadow ? Component.translatable("lryq_hud.screen.status.on") : Component.translatable("lryq_hud.screen.status.off"));
+    }
+
+    private Component getGroupAlignmentMessage(GroupedHUD target) {
+        return Component.translatable(target.groupSettings.alignVertical ? "lryq_hud.screen.button.group_alignment.vertical" : "lryq_hud.screen.button.group_alignment.horizontal");
+    }
+
+    private boolean isCustomHUDElement(AbstractHUD target) {
+        return false;
+    }
+
 
     public EditHUDScreen(Component title, Screen parent) {
         super(title);
@@ -485,6 +534,37 @@ public class EditHUDScreen extends Screen {
             final int Y = this.height - 50;
             actionBar.render(context, CENTER_X, Y);
         }
+
+        if (contextMenuOpen) {
+            // Background
+            context.fill(contextMenuX, contextMenuY, contextMenuX + contextMenuWidth, contextMenuY + contextMenuHeight, 0xF5101010);
+            RenderUtils.drawBorder(context, contextMenuX, contextMenuY, contextMenuWidth, contextMenuHeight, 0xFF404040);
+
+            // Title Text
+            if (contextMenuTargetHUD != null) {
+                context.text(CLIENT.font, contextMenuTargetHUD.getName(), contextMenuX + 10, contextMenuY + 10, 0xFFFFFFFF, true);
+            } else {
+                context.text(CLIENT.font, Component.translatable("lryq_hud.menu.add_elements"), contextMenuX + 10, contextMenuY + 10, 0xFFFFFFFF, true);
+            }
+
+            // Labels for EditBoxes like Scale or Gap
+            for (net.minecraft.client.gui.components.events.GuiEventListener widget : contextMenuWidgets) {
+                if (widget instanceof EditBox editBox) {
+                    if (editBox.getMessage().getString().equals("Scale")) {
+                        context.text(CLIENT.font, Component.translatable("lryq_hud.screen.field.scale"), contextMenuX + 10, editBox.getY() + 5, 0xFFFFFFFF, true);
+                    } else if (editBox.getMessage().getString().equals("Gap")) {
+                        context.text(CLIENT.font, Component.translatable("lryq_hud.screen.field.gap"), contextMenuX + 10, editBox.getY() + 5, 0xFFFFFFFF, true);
+                    }
+                }
+            }
+
+            // Draw all context menu widgets manually
+            for (net.minecraft.client.gui.components.events.GuiEventListener widget : contextMenuWidgets) {
+                if (widget instanceof net.minecraft.client.gui.components.Renderable renderable) {
+                    renderable.extractRenderState(context, mouseX, mouseY, delta);
+                }
+            }
+        }
     }
 
     public void renderGrid(GuiGraphicsExtractor context) {
@@ -601,6 +681,28 @@ public class EditHUDScreen extends Screen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
+        if (click.button() == 1) { // Right Click
+            double mouseX = click.x();
+            double mouseY = click.y();
+            AbstractHUD target = getHUDAtPosition(mouseX, mouseY);
+            openContextMenu(mouseX, mouseY, target);
+            return true;
+        }
+
+        if (contextMenuOpen) {
+            double mouseX = click.x();
+            double mouseY = click.y();
+            if (mouseX >= contextMenuX && mouseX <= contextMenuX + contextMenuWidth &&
+                mouseY >= contextMenuY && mouseY <= contextMenuY + contextMenuHeight) {
+                if (super.mouseClicked(click, doubled)) {
+                    return true;
+                }
+            } else {
+                closeContextMenu();
+                return true;
+            }
+        }
+
         if (super.mouseClicked(click, doubled))
             return true;
 
@@ -1125,6 +1227,19 @@ public class EditHUDScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent input) {
+        if (contextMenuOpen) {
+            if (input.key() == GLFW.GLFW_KEY_ESCAPE) {
+                closeContextMenu();
+                return true;
+            }
+            for (net.minecraft.client.gui.components.events.GuiEventListener widget : contextMenuWidgets) {
+                if (widget instanceof EditBox editBox && editBox.isFocused()) {
+                    return super.keyPressed(input);
+                }
+            }
+            return true;
+        }
+
         if (isTextFieldsFocused())
             return super.keyPressed(input);
 
@@ -1936,6 +2051,149 @@ public class EditHUDScreen extends Screen {
                     newGroup.groupSettings = oldSettings;
                 }
         );
+    }
+
+    private void openContextMenu(double mouseX, double mouseY, AbstractHUD target) {
+        closeContextMenu();
+
+        contextMenuTargetHUD = target;
+        contextMenuOpen = true;
+
+        int x = (int) mouseX;
+        int y = (int) mouseY;
+
+        if (target != null) {
+            contextMenuWidth = 160;
+            boolean isGroup = target instanceof GroupedHUD;
+            boolean isCustomText = isCustomHUDElement(target);
+
+            int heightNeeded = 25 + 22 + 22 + 22 + 22 + 15;
+            if (isGroup) heightNeeded += 22 * 4;
+            if (isCustomText) heightNeeded += 22;
+
+            contextMenuHeight = heightNeeded;
+
+            if (x + contextMenuWidth > this.width) x = this.width - contextMenuWidth - 5;
+            if (y + contextMenuHeight > this.height) y = this.height - contextMenuHeight - 5;
+            if (x < 5) x = 5;
+            if (y < 5) y = 5;
+
+            contextMenuX = x;
+            contextMenuY = y;
+
+            int currentY = y + 25;
+            int widgetW = contextMenuWidth - 20;
+
+            Button shouldRenderBtn = Button.builder(
+                getShouldRenderMessage(target),
+                btn -> {
+                    boolean nextVal = !target.getSettings().shouldRender();
+                    HUDAction act = onShouldRenderChanged(target, nextVal);
+                    if (act != null) history.execute(act);
+                    btn.setMessage(getShouldRenderMessage(target));
+                    updateFieldsFromSelectedHUD();
+                }
+            ).bounds(x + 10, currentY, widgetW, 20).build();
+            addContextMenuWidget(shouldRenderBtn);
+            currentY += 22;
+
+            Button bgBtn = Button.builder(
+                getBackgroundMessage(target),
+                btn -> {
+                    boolean nextVal = !target.getSettings().drawBackground;
+                    HUDAction act = onDrawBackgroundChanged(target, nextVal);
+                    if (act != null) history.execute(act);
+                    btn.setMessage(getBackgroundMessage(target));
+                    updateFieldsFromSelectedHUD();
+                }
+            ).bounds(x + 10, currentY, widgetW, 20).build();
+            addContextMenuWidget(bgBtn);
+            currentY += 22;
+
+            Button shadowBtn = Button.builder(
+                getShadowMessage(target),
+                btn -> {
+                    boolean nextVal = !target.getSettings().drawTextShadow;
+                    HUDAction act = onDrawTextShadowChanged(target, nextVal);
+                    if (act != null) history.execute(act);
+                    btn.setMessage(getShadowMessage(target));
+                    updateFieldsFromSelectedHUD();
+                }
+            ).bounds(x + 10, currentY, widgetW, 20).build();
+            addContextMenuWidget(shadowBtn);
+            currentY += 22;
+
+            EditBox scaleBox = new EditBox(CLIENT.font, x + 60, currentY, widgetW - 50, 18, Component.literal("Scale"));
+            scaleBox.setValue(String.valueOf(target.getSettings().scale));
+            scaleBox.setResponder(text -> {
+                try {
+                    float val = Float.parseFloat(text);
+                    HUDAction act = onScaleFieldChanged(target, target.getSettings().scale, val);
+                    if (act != null) history.execute(act);
+                } catch (NumberFormatException ignored) {}
+            });
+            addContextMenuWidget(scaleBox);
+            currentY += 22;
+
+            if (isGroup) {
+                GroupedHUD groupedHUD = (GroupedHUD) target;
+                EditBox gapBox = new EditBox(CLIENT.font, x + 60, currentY, widgetW - 50, 18, Component.literal("Gap"));
+                gapBox.setValue(String.valueOf(groupedHUD.groupSettings.gap));
+                gapBox.setResponder(text -> {
+                    try {
+                        int val = Integer.parseInt(text);
+                        HUDAction act = onGapFieldChanged(groupedHUD, groupedHUD.groupSettings.gap, val);
+                        if (act != null) history.execute(act);
+                    } catch (NumberFormatException ignored) {}
+                });
+                addContextMenuWidget(gapBox);
+                currentY += 22;
+
+                Button alignBtn = Button.builder(
+                    getGroupAlignmentMessage(groupedHUD),
+                    btn -> {
+                        boolean nextVal = !groupedHUD.groupSettings.alignVertical;
+                        HUDAction act = onGroupAlignmentChanged(groupedHUD, nextVal);
+                        if (act != null) history.execute(act);
+                        btn.setMessage(getGroupAlignmentMessage(groupedHUD));
+                    }
+                ).bounds(x + 10, currentY, widgetW, 20).build();
+                addContextMenuWidget(alignBtn);
+                currentY += 22;
+
+                Button childAlignBtn = Button.builder(
+                    Component.nullToEmpty(groupedHUD.groupSettings.getChildAlignment().toString()),
+                    btn -> {
+                        HUDAction act = onChildAlignmentChanged(groupedHUD, groupedHUD.groupSettings.getChildAlignment().next());
+                        if (act != null) history.execute(act);
+                        btn.setMessage(Component.nullToEmpty(groupedHUD.groupSettings.getChildAlignment().toString()));
+                    }
+                ).bounds(x + 10, currentY, widgetW, 20).build();
+                addContextMenuWidget(childAlignBtn);
+                currentY += 22;
+
+                Button childOrderBtn = Button.builder(
+                    Component.nullToEmpty(groupedHUD.groupSettings.getChildOrdering().toString()),
+                    btn -> {
+                        HUDAction act = onChildOrderingChanged(groupedHUD, groupedHUD.groupSettings.getChildOrdering().next());
+                        if (act != null) history.execute(act);
+                        btn.setMessage(Component.nullToEmpty(groupedHUD.groupSettings.getChildOrdering().toString()));
+                    }
+                ).bounds(x + 10, currentY, widgetW, 20).build();
+                addContextMenuWidget(childOrderBtn);
+                currentY += 22;
+            }
+        } else {
+            // Empty Space Menu placeholder (for step 3)
+            contextMenuWidth = 160;
+            contextMenuHeight = 40;
+            if (x + contextMenuWidth > this.width) x = this.width - contextMenuWidth - 5;
+            if (y + contextMenuHeight > this.height) y = this.height - contextMenuHeight - 5;
+            if (x < 5) x = 5;
+            if (y < 5) y = 5;
+            contextMenuX = x;
+            contextMenuY = y;
+        }
     }
 
     // WIP
