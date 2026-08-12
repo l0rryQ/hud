@@ -10,7 +10,7 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 public class ClockInGameSettings {
 
     @ConfigEntry.Gui.TransitiveObject
-    public BaseHUDSettings base = new BaseHUDSettings(false, 3, 24, ScreenAlignmentX.CENTER, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN);
+    public BaseHUDSettings base = new BaseHUDSettings(true, 3, 24, ScreenAlignmentX.CENTER, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN);
 
     public boolean use12Hour = false;
 

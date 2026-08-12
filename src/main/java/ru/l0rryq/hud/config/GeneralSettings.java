@@ -83,7 +83,7 @@ public class GeneralSettings {
         public int iconInfoGap = 1;
 
         @Comment("Either draw the background rounded or rectangle")
-        public boolean drawBackgroundRounded = false;
+        public boolean drawBackgroundRounded = true;
 
         public float getGlobalScale() {
             if (this.globalScale < 0) {

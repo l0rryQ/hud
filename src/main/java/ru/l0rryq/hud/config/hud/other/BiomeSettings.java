@@ -10,7 +10,7 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 public class BiomeSettings {
 
     @ConfigEntry.Gui.TransitiveObject
-    public BaseHUDSettings base = new BaseHUDSettings(false, -3, 24, ScreenAlignmentX.CENTER, ScreenAlignmentY.TOP, GrowthDirectionX.LEFT, GrowthDirectionY.DOWN);
+    public BaseHUDSettings base = new BaseHUDSettings(true, -3, 24, ScreenAlignmentX.CENTER, ScreenAlignmentY.TOP, GrowthDirectionX.LEFT, GrowthDirectionY.DOWN);
 
     @ConfigEntry.Gui.CollapsibleObject
     public DimensionColorSettings color = new DimensionColorSettings();
