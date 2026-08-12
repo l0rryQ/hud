@@ -1,12 +1,12 @@
-name: Publish Fabric Mod
+name: Build and Auto-Publish
 
 on:
-  release:
-    types: [published]
+  push:
+    branches: [ "main", "master" ]
 
 jobs:
   build-and-publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
 
@@ -14,24 +14,40 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Setup JDK 25
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: '25'
+          distribution: 'microsoft'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
       - name: Make gradlew executable
-        run: chmod +x gradlew
+        run: chmod +x ./gradlew
 
       - name: Build mod
         run: ./gradlew build
 
-      - name: Upload to GitHub Release
+      # 1
+      - name: Extract mod version
+        id: get_version
+        run: |
+          # Читаем mod_version=... из gradle.properties
+          VERSION=$(grep -i "mod_version" gradle.properties | cut -d'=' -f2 | tr -d ' \r')
+          echo "MOD_VERSION=$VERSION" >> $GITHUB_ENV
+
+      # 2
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: build/libs/*.jar
+          tag_name: "v${{ env.MOD_VERSION }}-b${{ github.run_number }}"
+          name: "Release v${{ env.MOD_VERSION }} (Build #${{ github.run_number }})"
+          body: |
+            Автоматическая сборка для коммита `${{ github.sha }}`.
+            Сообщение коммита: ${{ github.event.head_commit.message }}
+          draft: false
+          prerelease: false
+          files: build/libs/!(*-@(dev|sources|javadoc)).jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
