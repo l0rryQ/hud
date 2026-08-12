@@ -63,7 +63,7 @@ public class GroupedHUDSettings {
     }
 
     public GroupedHUDSettings() {
-        this(new BaseHUDSettings(false, 0, 0, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN, false));
+        this(new BaseHUDSettings(true, 0, 0, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN, false));
     }
 
     public ChildAlignment getChildAlignment() {

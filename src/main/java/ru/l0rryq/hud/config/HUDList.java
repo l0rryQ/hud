@@ -27,7 +27,7 @@ public class HUDList {
     public HUDList() {
         groupedHuds.add(
                 new GroupedHUDSettings(
-                        new BaseHUDSettings(false, 24, 0, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE, false),
+                        new BaseHUDSettings(true, 24, 0, ScreenAlignmentX.LEFT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.RIGHT, GrowthDirectionY.MIDDLE, false),
                         1,
                         1,
                         true,
@@ -37,7 +37,7 @@ public class HUDList {
         );
         groupedHuds.add(
                 new GroupedHUDSettings(
-                        new BaseHUDSettings(false, -24, 24, ScreenAlignmentX.RIGHT, ScreenAlignmentY.TOP, GrowthDirectionX.LEFT, GrowthDirectionY.DOWN, false),
+                        new BaseHUDSettings(true, -24, 24, ScreenAlignmentX.RIGHT, ScreenAlignmentY.TOP, GrowthDirectionX.LEFT, GrowthDirectionY.DOWN, false),
                         2,
                         2,
                         true,
@@ -47,7 +47,7 @@ public class HUDList {
         );
         groupedHuds.add(
                 new GroupedHUDSettings(
-                        new BaseHUDSettings(false, 0, 24, ScreenAlignmentX.CENTER, ScreenAlignmentY.TOP, GrowthDirectionX.CENTER, GrowthDirectionY.DOWN, false),
+                        new BaseHUDSettings(true, 0, 24, ScreenAlignmentX.CENTER, ScreenAlignmentY.TOP, GrowthDirectionX.CENTER, GrowthDirectionY.DOWN, false),
                         3,
                         3,
                         false,
@@ -57,7 +57,7 @@ public class HUDList {
         );
         groupedHuds.add(
                 new GroupedHUDSettings(
-                        new BaseHUDSettings(false, -24, -24, ScreenAlignmentX.RIGHT, ScreenAlignmentY.BOTTOM, GrowthDirectionX.LEFT, GrowthDirectionY.UP, false),
+                        new BaseHUDSettings(true, -24, -24, ScreenAlignmentX.RIGHT, ScreenAlignmentY.BOTTOM, GrowthDirectionX.LEFT, GrowthDirectionY.UP, false),
                         4,
                         3,
                         false,
