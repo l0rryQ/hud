@@ -2142,8 +2142,16 @@ public class EditHUDScreen extends Screen {
         int x = (int) mouseX;
         int y = (int) mouseY;
 
+        String titleText = "";
         if (target != null) {
-            contextMenuWidth = 180;
+            titleText = target.getName();
+        } else {
+            titleText = Component.translatable("lryq_hud.menu.add_elements").getString();
+        }
+        int textW = CLIENT.font.width(titleText);
+        contextMenuWidth = Math.max(180, textW + 24);
+
+        if (target != null) {
             boolean isGroup = target instanceof GroupedHUD;
             boolean isMultiSelection = selectedHUDs.size() > 1 && selectedHUDs.contains(target);
 

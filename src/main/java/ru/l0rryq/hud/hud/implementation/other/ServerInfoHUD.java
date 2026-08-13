@@ -90,7 +90,6 @@ public class ServerInfoHUD extends AbstractHUD {
                 ICON_WIDTH, ICON_HEIGHT,
                 ICON_WIDTH, ICON_HEIGHT,
                 c,
-                0xFFFFFFFF,
                 displayMode,
                 drawBackground,
                 drawTextShadow
