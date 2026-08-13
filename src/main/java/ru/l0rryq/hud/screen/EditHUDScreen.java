@@ -2277,8 +2277,20 @@ public class EditHUDScreen extends Screen {
                 Button onOffBtn = Button.builder(
                     Component.translatable("lryq_hud.screen.button.remove"),
                     btn -> {
-                        HUDAction act = onShouldRenderChanged(target, false);
-                        if (act != null) history.execute(act);
+                        if (isMultiSelection) {
+                            List<HUDAction> acts = new ArrayList<>();
+                            for (AbstractHUD hud : selectedHUDs) {
+                                HUDAction act = onShouldRenderChanged(hud, false);
+                                if (act != null) acts.add(act);
+                            }
+                            if (!acts.isEmpty()) {
+                                history.execute(new CompositeAction(acts));
+                            }
+                            selectedHUDs.clear();
+                        } else {
+                            HUDAction act = onShouldRenderChanged(target, false);
+                            if (act != null) history.execute(act);
+                        }
                         updateFieldsFromSelectedHUD();
                         closeContextMenu();
                     }
@@ -2290,8 +2302,19 @@ public class EditHUDScreen extends Screen {
                     Component.translatable("lryq_hud.screen.button.display", target.getSettings().getDisplayMode().toString()),
                     btn -> {
                         HUDDisplayMode next = target.getSettings().getDisplayMode().next();
-                        HUDAction act = onHUDDisplayModeChanged(target, next);
-                        if (act != null) history.execute(act);
+                        if (isMultiSelection) {
+                            List<HUDAction> acts = new ArrayList<>();
+                            for (AbstractHUD hud : selectedHUDs) {
+                                HUDAction act = onHUDDisplayModeChanged(hud, next);
+                                if (act != null) acts.add(act);
+                            }
+                            if (!acts.isEmpty()) {
+                                history.execute(new CompositeAction(acts));
+                            }
+                        } else {
+                            HUDAction act = onHUDDisplayModeChanged(target, next);
+                            if (act != null) history.execute(act);
+                        }
                         btn.setMessage(Component.translatable("lryq_hud.screen.button.display", target.getSettings().getDisplayMode().toString()));
                         updateFieldsFromSelectedHUD();
                     }
