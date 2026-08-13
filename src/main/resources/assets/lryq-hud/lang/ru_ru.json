@@ -342,5 +342,6 @@
   "text.autoconfig.lryq_hud.option.serverInfoSettings.additionalString": "Дополнительная этикетка",
   "text.autoconfig.lryq_hud.option.serverInfoSettings.showOnlyOnServers": "Показывать только на серверах",
   "lryq_hud.menu.add_elements": "Добавить элементы",
-  "lryq_hud.menu.custom_element": "Пользовательский элемент"
+  "lryq_hud.menu.custom_element": "+ Пользовательский",
+  "lryq_hud.screen.button.remove": "Скрыть"
 }
