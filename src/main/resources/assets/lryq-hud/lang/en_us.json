@@ -401,5 +401,6 @@
   "text.autoconfig.lryq_hud.option.serverInfoSettings.additionalString": "Extra Label",
   "text.autoconfig.lryq_hud.option.serverInfoSettings.showOnlyOnServers": "Show Only on Servers",
   "lryq_hud.menu.add_elements": "Add Elements",
-  "lryq_hud.menu.custom_element": "Custom Element"
+  "lryq_hud.menu.custom_element": "+ Custom",
+  "lryq_hud.screen.button.remove": "Remove"
 }

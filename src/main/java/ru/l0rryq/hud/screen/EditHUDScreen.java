@@ -2201,7 +2201,7 @@ public class EditHUDScreen extends Screen {
                 currentY += 22;
 
                 Button onOffBtn = Button.builder(
-                    Component.literal("Status: ON"),
+                    Component.translatable("lryq_hud.screen.button.remove"),
                     btn -> {
                         List<HUDAction> acts = new ArrayList<>();
                         for (AbstractHUD subHud : groupedHUD.huds) {
@@ -2275,16 +2275,12 @@ public class EditHUDScreen extends Screen {
                 currentY += 22;
 
                 Button onOffBtn = Button.builder(
-                    Component.literal("Status: ").append(target.getSettings().shouldRender() ? Component.translatable("lryq_hud.screen.status.on") : Component.translatable("lryq_hud.screen.status.off")),
+                    Component.translatable("lryq_hud.screen.button.remove"),
                     btn -> {
-                        boolean nextVal = !target.getSettings().shouldRender();
-                        HUDAction act = onShouldRenderChanged(target, nextVal);
+                        HUDAction act = onShouldRenderChanged(target, false);
                         if (act != null) history.execute(act);
-                        btn.setMessage(Component.literal("Status: ").append(target.getSettings().shouldRender() ? Component.translatable("lryq_hud.screen.status.on") : Component.translatable("lryq_hud.screen.status.off")));
                         updateFieldsFromSelectedHUD();
-                        if (!nextVal) {
-                            closeContextMenu();
-                        }
+                        closeContextMenu();
                     }
                 ).bounds(x + 10, currentY, widgetW, 20).build();
                 addContextMenuWidget(onOffBtn);
@@ -2428,7 +2424,7 @@ public class EditHUDScreen extends Screen {
                     addContextMenuWidget(spawnBtn);
                 } else {
                     Button spawnBtn = Button.builder(
-                        Component.literal("+ Пользовательский"),
+                        Component.translatable("lryq_hud.menu.custom_element"),
                         btn -> {}
                     ).bounds(x + 10, currentY, widgetW, 20).build();
                     spawnBtn.active = false;
