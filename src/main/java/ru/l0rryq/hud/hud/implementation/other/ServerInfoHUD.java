@@ -9,6 +9,7 @@ import ru.l0rryq.hud.hud.HUDId;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.gui.screens.FaviconTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -26,6 +27,11 @@ public class ServerInfoHUD extends AbstractHUD {
 
     private String serverText;
     private HUDDisplayMode displayMode;
+
+    private FaviconTexture faviconTexture;
+    private byte[] lastUploadedIconBytes = null;
+    private java.nio.file.Path lastUploadedWorldIconPath = null;
+    private boolean hasCustomFavicon = false;
 
     public ServerInfoHUD() {
         super(SETTINGS.base);
@@ -79,6 +85,55 @@ public class ServerInfoHUD extends AbstractHUD {
 
         boolean isSingleplayer = CLIENT.isLocalServer() || CLIENT.getCurrentServer() == null;
         Identifier texture = isSingleplayer ? WORLD_ICON : SERVER_ICON;
+
+        if (faviconTexture == null) {
+            faviconTexture = FaviconTexture.forServer(CLIENT.getTextureManager(), "lryq_hud_server_info");
+        }
+
+        hasCustomFavicon = false;
+
+        if (isSingleplayer) {
+            if (CLIENT.getSingleplayerServer() != null) {
+                try {
+                    java.nio.file.Path iconPath = CLIENT.getSingleplayerServer().getWorldPath(net.minecraft.world.level.storage.LevelResource.ICON_FILE);
+                    if (java.nio.file.Files.exists(iconPath)) {
+                        hasCustomFavicon = true;
+                        if (!iconPath.equals(lastUploadedWorldIconPath)) {
+                            lastUploadedWorldIconPath = iconPath;
+                            lastUploadedIconBytes = null;
+                            try (java.io.InputStream stream = java.nio.file.Files.newInputStream(iconPath)) {
+                                com.mojang.blaze3d.platform.NativeImage nativeImage = com.mojang.blaze3d.platform.NativeImage.read(stream);
+                                faviconTexture.upload(nativeImage);
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    // fallback
+                }
+            }
+        } else {
+            ServerData serverData = CLIENT.getCurrentServer();
+            if (serverData != null) {
+                byte[] bytes = serverData.getIconBytes();
+                if (bytes != null && bytes.length > 0) {
+                    hasCustomFavicon = true;
+                    if (!java.util.Arrays.equals(bytes, lastUploadedIconBytes)) {
+                        lastUploadedIconBytes = bytes;
+                        lastUploadedWorldIconPath = null;
+                        try (java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(bytes)) {
+                            com.mojang.blaze3d.platform.NativeImage nativeImage = com.mojang.blaze3d.platform.NativeImage.read(bais);
+                            faviconTexture.upload(nativeImage);
+                        } catch (Exception e) {
+                            hasCustomFavicon = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (hasCustomFavicon) {
+            texture = faviconTexture.textureLocation();
+        }
 
         return RenderUtils.drawSmallHUD(
                 context,
