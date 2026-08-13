@@ -98,6 +98,7 @@ public class HUDComponent {
         registerHUD(new PlayerCountHUD());
         registerHUD(new ComboHUD());
         registerHUD(new ReachHUD());
+        registerHUD(new ServerInfoHUD());
 
         registerHUD(new PositiveEffectHUD());
         registerHUD(new NegativeEffectHUD());

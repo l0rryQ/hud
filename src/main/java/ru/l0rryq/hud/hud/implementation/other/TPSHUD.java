@@ -39,7 +39,7 @@ public class TPSHUD extends AbstractHUD {
         float tps = (float) Math.round(TPSTracker.getTPS() * 10) / 10;
 
         step = getStep(tps);
-        str = tps + SETTINGS.additionalString;
+        str = getFormattedText(tps + SETTINGS.additionalString);
         int strWidth = CLIENT.font.width(str) - 1;
 
         displayMode = getSettings().getDisplayMode();

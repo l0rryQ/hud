@@ -35,5 +35,7 @@ public enum HUDId {
     REACH,
 
     POSITIVE_EFFECT,
-    NEGATIVE_EFFECT
+    NEGATIVE_EFFECT,
+
+    SERVER_INFO
 }

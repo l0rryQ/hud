@@ -353,4 +353,82 @@ public abstract class AbstractHUD implements HUDInterface {
 
         return false;
     }
+
+    public String getFormattedText(String defaultValue) {
+        String template = getSettings().textTemplate;
+        if (template == null || template.isEmpty()) {
+            return defaultValue;
+        }
+
+        String result = template;
+
+        if (result.contains("%fps%")) {
+            result = result.replace("%fps%", String.valueOf(Minecraft.getInstance().getFps()));
+        }
+        if (result.contains("%tps%")) {
+            result = result.replace("%tps%", String.format(java.util.Locale.ROOT, "%.1f", ru.l0rryq.hud.helper.TPSTracker.getTPS()));
+        }
+        if (result.contains("%ping%")) {
+            int ping = 0;
+            if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.connection.getPlayerInfo(Minecraft.getInstance().player.getUUID()) != null) {
+                ping = Minecraft.getInstance().player.connection.getPlayerInfo(Minecraft.getInstance().player.getUUID()).getLatency();
+            }
+            result = result.replace("%ping%", String.valueOf(ping));
+        }
+        if (result.contains("%biome%")) {
+            String biomeName = "Unknown";
+            if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null) {
+                net.minecraft.core.Holder<net.minecraft.world.level.biome.Biome> biome = Minecraft.getInstance().level.getBiome(Minecraft.getInstance().player.getOnPos());
+                biomeName = biome.unwrapKey().map(k -> k.identifier().getPath()).orElse("Unknown");
+                biomeName = ru.l0rryq.hud.Helper.idNameFormatter(biomeName);
+            }
+            result = result.replace("%biome%", biomeName);
+        }
+        if (result.contains("%day%")) {
+            long day = 0;
+            if (Minecraft.getInstance().level != null) {
+                day = Minecraft.getInstance().level.getDefaultClockTime() / 24000L;
+            }
+            result = result.replace("%day%", String.valueOf(day));
+        }
+        if (result.contains("%ip%") || result.contains("%server%")) {
+            String server = Minecraft.getInstance().isLocalServer() ? "Singleplayer" : (Minecraft.getInstance().getCurrentServer() != null ? Minecraft.getInstance().getCurrentServer().ip : "Unknown");
+            result = result.replace("%ip%", server).replace("%server%", server);
+        }
+        if (result.contains("%player_count%")) {
+            int count = 1;
+            if (!Minecraft.getInstance().isLocalServer() && Minecraft.getInstance().player != null) {
+                count = Minecraft.getInstance().player.connection.getListedOnlinePlayers().size();
+            } else if (Minecraft.getInstance().getSingleplayerServer() != null) {
+                count = Minecraft.getInstance().getSingleplayerServer().getPlayerCount();
+            }
+            result = result.replace("%player_count%", String.valueOf(count));
+        }
+        if (result.contains("%nether_x%")) {
+            int nx = Minecraft.getInstance().player != null ? (int) (Minecraft.getInstance().player.getX() / 8) : 0;
+            result = result.replace("%nether_x%", String.valueOf(nx));
+        }
+        if (result.contains("%nether_y%")) {
+            int ny = Minecraft.getInstance().player != null ? (int) Minecraft.getInstance().player.getY() : 0;
+            result = result.replace("%nether_y%", String.valueOf(ny));
+        }
+        if (result.contains("%nether_z%")) {
+            int nz = Minecraft.getInstance().player != null ? (int) (Minecraft.getInstance().player.getZ() / 8) : 0;
+            result = result.replace("%nether_z%", String.valueOf(nz));
+        }
+        if (result.contains("%x%")) {
+            int x = Minecraft.getInstance().player != null ? (int) Minecraft.getInstance().player.getX() : 0;
+            result = result.replace("%x%", String.valueOf(x));
+        }
+        if (result.contains("%y%")) {
+            int y = Minecraft.getInstance().player != null ? (int) Minecraft.getInstance().player.getY() : 0;
+            result = result.replace("%y%", String.valueOf(y));
+        }
+        if (result.contains("%z%")) {
+            int z = Minecraft.getInstance().player != null ? (int) Minecraft.getInstance().player.getZ() : 0;
+            result = result.replace("%z%", String.valueOf(z));
+        }
+
+        return result;
+    }
 }

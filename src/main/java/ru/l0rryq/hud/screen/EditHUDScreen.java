@@ -98,6 +98,8 @@ public class EditHUDScreen extends Screen {
     private int contextMenuHeight;
     private final List<net.minecraft.client.gui.components.events.GuiEventListener> contextMenuWidgets = new ArrayList<>();
     private AbstractHUD contextMenuTargetHUD = null; // null means empty space
+    private String contextMenuSearchFilter = "";
+    private int contextMenuScrollOffset = 0;
 
     private <T extends net.minecraft.client.gui.components.events.GuiEventListener & net.minecraft.client.gui.narration.NarratableEntry> T addContextMenuWidget(T widget) {
         addWidget(widget);
@@ -137,6 +139,83 @@ public class EditHUDScreen extends Screen {
 
     private boolean isCustomHUDElement(AbstractHUD target) {
         return false;
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (contextMenuOpen && contextMenuTargetHUD == null) {
+            if (mouseX >= contextMenuX && mouseX <= contextMenuX + contextMenuWidth &&
+                mouseY >= contextMenuY && mouseY <= contextMenuY + contextMenuHeight) {
+                if (scrollY < 0) {
+                    contextMenuScrollOffset++;
+                } else if (scrollY > 0) {
+                    contextMenuScrollOffset--;
+                }
+                int maxScroll = Math.max(0, getDisabledHUDsFiltered(contextMenuSearchFilter).size() - 5);
+                if (contextMenuScrollOffset > maxScroll) contextMenuScrollOffset = maxScroll;
+                if (contextMenuScrollOffset < 0) contextMenuScrollOffset = 0;
+
+                rebuildEmptySpaceMenu(contextMenuX, contextMenuY);
+                return true;
+            }
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    private List<AbstractHUD> getDisabledHUDsFiltered(String filter) {
+        List<AbstractHUD> result = new ArrayList<>();
+        for (AbstractHUD hud : HUDComponent.getInstance().getHudMap().values()) {
+            if (hud instanceof GroupedHUD) continue;
+            if (!hud.getSettings().shouldRender) {
+                if (filter.isEmpty() || hud.getName().toLowerCase().contains(filter.toLowerCase())) {
+                    result.add(hud);
+                }
+            }
+        }
+        return result;
+    }
+
+    private void rebuildEmptySpaceMenu(int x, int y) {
+        for (net.minecraft.client.gui.components.events.GuiEventListener widget : contextMenuWidgets) {
+            removeWidget(widget);
+        }
+        contextMenuWidgets.clear();
+        openContextMenu(x, y, null);
+    }
+
+    private int getCategoryIndexForHUD(AbstractHUD hud) {
+        if (hud == null) return 0;
+        if (hud instanceof GroupedHUD) return 1;
+        String id = hud.getId();
+        if (id.equals(HUDId.FPS.toString())) return 2;
+        if (id.equals(HUDId.SERVER_INFO.toString())) return 3;
+        if (id.equals(HUDId.HELMET.toString()) || id.equals(HUDId.CHESTPLATE.toString()) || id.equals(HUDId.LEGGINGS.toString()) || id.equals(HUDId.BOOTS.toString())) return 4;
+        if (id.equals(HUDId.LEFT_HAND.toString()) || id.equals(HUDId.RIGHT_HAND.toString())) return 5;
+        if (id.equals(HUDId.X_COORDINATE.toString()) || id.equals(HUDId.Y_COORDINATE.toString()) || id.equals(HUDId.Z_COORDINATE.toString()) ||
+            id.equals(HUDId.NETHER_X_COORDINATE.toString()) || id.equals(HUDId.NETHER_Y_COORDINATE.toString()) || id.equals(HUDId.NETHER_Z_COORDINATE.toString())) return 6;
+        if (id.equals(HUDId.POSITIVE_EFFECT.toString()) || id.equals(HUDId.NEGATIVE_EFFECT.toString())) return 7;
+        if (id.equals(HUDId.DIRECTION.toString())) return 8;
+        if (id.equals(HUDId.PING.toString())) return 9;
+        if (id.equals(HUDId.TPS.toString())) return 10;
+        if (id.equals(HUDId.PLAYER_COUNT.toString())) return 11;
+        if (id.equals(HUDId.CLOCK_INGAME.toString()) || id.equals(HUDId.CLOCK_SYSTEM.toString())) return 12;
+        if (id.equals(HUDId.COMBO.toString())) return 13;
+        if (id.equals(HUDId.REACH.toString())) return 14;
+        if (id.equals(HUDId.SPEED.toString())) return 15;
+        if (id.equals(HUDId.BIOME.toString())) return 16;
+        if (id.equals(HUDId.DAY.toString())) return 17;
+        if (id.equals(HUDId.TARGETED_CROSSHAIR.toString())) return 18;
+        if (id.equals(HUDId.INVENTORY.toString())) return 19;
+        if (id.equals(HUDId.INVENTORY_SPACE.toString())) return 20;
+        return 0;
+    }
+
+    private void openConfigScreenForHUD(AbstractHUD hud) {
+        Screen configScreen = AutoConfigClient.getConfigScreen(Settings.class, this).get();
+        if (configScreen instanceof me.shedaniel.clothconfig2.gui.AbstractConfigScreen abstractScreen) {
+            abstractScreen.selectedCategoryIndex = getCategoryIndexForHUD(hud);
+        }
+        this.minecraft.setScreenAndShow(configScreen);
     }
 
 
@@ -250,7 +329,7 @@ public class EditHUDScreen extends Screen {
 
         int wConfigScreen = SQUARE_WIDGET_LENGTH;
         int hConfigScreen = wConfigScreen;
-        int xConfigScreenButton = CENTER_X - (wConfigScreen / 2);
+        int xConfigScreenButton = CENTER_X + (GAP/2);
         Button configScreenButton = Button.builder(
                         Component.translatable("lryq_hud.screen.button.config"),
                         button -> {
@@ -262,7 +341,7 @@ public class EditHUDScreen extends Screen {
                         }
                 )
                 .tooltip(Tooltip.create(Component.translatable("lryq_hud.screen.tooltip.config")))
-                .bounds(xConfigScreenButton, CENTER_Y, wConfigScreen, hConfigScreen)
+                .bounds(xConfigScreenButton, yBottom, wConfigScreen, hConfigScreen)
                 .build();
 
         int xHelpButton = CENTER_X - (GAP/2) - SQUARE_WIDGET_LENGTH;
@@ -276,20 +355,8 @@ public class EditHUDScreen extends Screen {
                 .bounds(xHelpButton, yBottom, SQUARE_WIDGET_LENGTH, SQUARE_WIDGET_LENGTH)
                 .build();
 
-        int xMoreOptionButton = CENTER_X + (GAP/2);
-        Button moreOptionButton = Button.builder(
-                Component.translatable("lryq_hud.screen.button.more_options"),
-                button -> {
-                    isMoreOptionActivated = !isMoreOptionActivated;
-                    onMoreOptionSwitched();
-                }
-        )
-                .tooltip(Tooltip.create(Component.translatable("lryq_hud.screen.tooltip.more_options")))
-                .bounds(xMoreOptionButton, yBottom, SQUARE_WIDGET_LENGTH, SQUARE_WIDGET_LENGTH)
-                .build();
-
         int terminatorWidth = 70;
-        int xSaveAndQuitButton = xMoreOptionButton + GAP + SQUARE_WIDGET_LENGTH;
+        int xSaveAndQuitButton = xConfigScreenButton + GAP + SQUARE_WIDGET_LENGTH;
         Button saveAndQuitButton = Button.builder(
                 Component.translatable("lryq_hud.screen.button.save_quit"),
                 button -> {
@@ -458,7 +525,6 @@ public class EditHUDScreen extends Screen {
 
         addRenderableWidget(cancelButton);
         addRenderableWidget(helpButton);
-        addRenderableWidget(moreOptionButton);
         addRenderableWidget(saveAndQuitButton);
 
         addRenderableWidget(configScreenButton);
@@ -1222,7 +1288,17 @@ public class EditHUDScreen extends Screen {
     }
 
     public boolean isTextFieldsFocused() {
-        return xField.isFocused() || yField.isFocused() || gapField.isFocused() || scaleField.isFocused();
+        if (xField.isFocused() || yField.isFocused() || gapField.isFocused() || scaleField.isFocused()) {
+            return true;
+        }
+        if (contextMenuOpen) {
+            for (net.minecraft.client.gui.components.events.GuiEventListener widget : contextMenuWidgets) {
+                if (widget instanceof EditBox editBox && editBox.isFocused()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -1884,13 +1960,18 @@ public class EditHUDScreen extends Screen {
 
         if (oldShouldRender == newShouldRender) return null;
 
+        String oldTemplate = hud.getSettings().textTemplate;
         return new ReversibleAction(
                 () -> {
                     hud.getSettings().shouldRender = newShouldRender;
+                    if (!newShouldRender) {
+                        hud.getSettings().textTemplate = "";
+                    }
                     hud.update();
                 },
                 () -> {
                     hud.getSettings().shouldRender = oldShouldRender;
+                    hud.getSettings().textTemplate = oldTemplate;
                     hud.update();
                 }
         );
@@ -2063,13 +2144,18 @@ public class EditHUDScreen extends Screen {
         int y = (int) mouseY;
 
         if (target != null) {
-            contextMenuWidth = 160;
+            contextMenuWidth = 180;
             boolean isGroup = target instanceof GroupedHUD;
-            boolean isCustomText = isCustomHUDElement(target);
+            boolean isMultiSelection = selectedHUDs.size() > 1 && selectedHUDs.contains(target);
 
-            int heightNeeded = 25 + 22 + 22 + 22 + 22 + 15;
-            if (isGroup) heightNeeded += 22 * 4;
-            if (isCustomText) heightNeeded += 22;
+            int heightNeeded = 25 + 15;
+            if (isMultiSelection) {
+                heightNeeded += 25;
+            } else if (isGroup) {
+                heightNeeded += 22 * 5;
+            } else {
+                heightNeeded += 22 * 6;
+            }
 
             contextMenuHeight = heightNeeded;
 
@@ -2084,59 +2170,47 @@ public class EditHUDScreen extends Screen {
             int currentY = y + 25;
             int widgetW = contextMenuWidth - 20;
 
-            Button shouldRenderBtn = Button.builder(
-                getShouldRenderMessage(target),
-                btn -> {
-                    boolean nextVal = !target.getSettings().shouldRender();
-                    HUDAction act = onShouldRenderChanged(target, nextVal);
-                    if (act != null) history.execute(act);
-                    btn.setMessage(getShouldRenderMessage(target));
-                    updateFieldsFromSelectedHUD();
-                }
-            ).bounds(x + 10, currentY, widgetW, 20).build();
-            addContextMenuWidget(shouldRenderBtn);
-            currentY += 22;
-
-            Button bgBtn = Button.builder(
-                getBackgroundMessage(target),
-                btn -> {
-                    boolean nextVal = !target.getSettings().drawBackground;
-                    HUDAction act = onDrawBackgroundChanged(target, nextVal);
-                    if (act != null) history.execute(act);
-                    btn.setMessage(getBackgroundMessage(target));
-                    updateFieldsFromSelectedHUD();
-                }
-            ).bounds(x + 10, currentY, widgetW, 20).build();
-            addContextMenuWidget(bgBtn);
-            currentY += 22;
-
-            Button shadowBtn = Button.builder(
-                getShadowMessage(target),
-                btn -> {
-                    boolean nextVal = !target.getSettings().drawTextShadow;
-                    HUDAction act = onDrawTextShadowChanged(target, nextVal);
-                    if (act != null) history.execute(act);
-                    btn.setMessage(getShadowMessage(target));
-                    updateFieldsFromSelectedHUD();
-                }
-            ).bounds(x + 10, currentY, widgetW, 20).build();
-            addContextMenuWidget(shadowBtn);
-            currentY += 22;
-
-            EditBox scaleBox = new EditBox(CLIENT.font, x + 60, currentY, widgetW - 50, 18, Component.literal("Scale"));
-            scaleBox.setValue(String.valueOf(target.getSettings().scale));
-            scaleBox.setResponder(text -> {
-                try {
-                    float val = Float.parseFloat(text);
-                    HUDAction act = onScaleFieldChanged(target, target.getSettings().scale, val);
-                    if (act != null) history.execute(act);
-                } catch (NumberFormatException ignored) {}
-            });
-            addContextMenuWidget(scaleBox);
-            currentY += 22;
-
-            if (isGroup) {
+            if (isMultiSelection) {
+                Button groupBtn = Button.builder(
+                    Component.translatable("lryq_hud.screen.button.group"),
+                    btn -> {
+                        if (canSelectedHUDsGroup) {
+                            HUDAction act = onGroupChanged(selectedHUDs);
+                            history.commit(act);
+                        }
+                        selectedHUDs.clear();
+                        updateFieldsFromSelectedHUD();
+                        updateGroupFieldFromSelectedHUD();
+                        closeContextMenu();
+                    }
+                ).bounds(x + 10, currentY, widgetW, 20).build();
+                addContextMenuWidget(groupBtn);
+            } else if (isGroup) {
                 GroupedHUD groupedHUD = (GroupedHUD) target;
+
+                Button settingsBtn = Button.builder(
+                    Component.literal("Settings"),
+                    btn -> {
+                        openConfigScreenForHUD(target);
+                    }
+                ).bounds(x + 10, currentY, widgetW, 20).build();
+                addContextMenuWidget(settingsBtn);
+                currentY += 22;
+
+                Button ungroupBtn = Button.builder(
+                    Component.translatable("lryq_hud.screen.button.ungroup"),
+                    btn -> {
+                        HUDAction act = onUngroupChanged(groupedHUD);
+                        history.commit(act);
+                        selectedHUDs.clear();
+                        updateFieldsFromSelectedHUD();
+                        updateGroupFieldFromSelectedHUD();
+                        closeContextMenu();
+                    }
+                ).bounds(x + 10, currentY, widgetW, 20).build();
+                addContextMenuWidget(ungroupBtn);
+                currentY += 22;
+
                 EditBox gapBox = new EditBox(CLIENT.font, x + 60, currentY, widgetW - 50, 18, Component.literal("Gap"));
                 gapBox.setValue(String.valueOf(groupedHUD.groupSettings.gap));
                 gapBox.setResponder(text -> {
@@ -2170,29 +2244,163 @@ public class EditHUDScreen extends Screen {
                     }
                 ).bounds(x + 10, currentY, widgetW, 20).build();
                 addContextMenuWidget(childAlignBtn);
-                currentY += 22;
-
-                Button childOrderBtn = Button.builder(
-                    Component.nullToEmpty(groupedHUD.groupSettings.getChildOrdering().toString()),
+            } else {
+                Button settingsBtn = Button.builder(
+                    Component.literal("Settings"),
                     btn -> {
-                        HUDAction act = onChildOrderingChanged(groupedHUD, groupedHUD.groupSettings.getChildOrdering().next());
-                        if (act != null) history.execute(act);
-                        btn.setMessage(Component.nullToEmpty(groupedHUD.groupSettings.getChildOrdering().toString()));
+                        openConfigScreenForHUD(target);
                     }
                 ).bounds(x + 10, currentY, widgetW, 20).build();
-                addContextMenuWidget(childOrderBtn);
+                addContextMenuWidget(settingsBtn);
                 currentY += 22;
+
+                Button displayModeBtn = Button.builder(
+                    Component.translatable("lryq_hud.screen.button.display", target.getSettings().getDisplayMode().toString()),
+                    btn -> {
+                        HUDDisplayMode next = target.getSettings().getDisplayMode().next();
+                        HUDAction act = onHUDDisplayModeChanged(target, next);
+                        if (act != null) history.execute(act);
+                        btn.setMessage(Component.translatable("lryq_hud.screen.button.display", target.getSettings().getDisplayMode().toString()));
+                        updateFieldsFromSelectedHUD();
+                    }
+                ).bounds(x + 10, currentY, widgetW, 20).build();
+                addContextMenuWidget(displayModeBtn);
+                currentY += 22;
+
+                Button bgBtn = Button.builder(
+                    getBackgroundMessage(target),
+                    btn -> {
+                        boolean nextVal = !target.getSettings().drawBackground;
+                        HUDAction act = onDrawBackgroundChanged(target, nextVal);
+                        if (act != null) history.execute(act);
+                        btn.setMessage(getBackgroundMessage(target));
+                        updateFieldsFromSelectedHUD();
+                    }
+                ).bounds(x + 10, currentY, widgetW, 20).build();
+                addContextMenuWidget(bgBtn);
+                currentY += 22;
+
+                Button shadowBtn = Button.builder(
+                    getShadowMessage(target),
+                    btn -> {
+                        boolean nextVal = !target.getSettings().drawTextShadow;
+                        HUDAction act = onDrawTextShadowChanged(target, nextVal);
+                        if (act != null) history.execute(act);
+                        btn.setMessage(getShadowMessage(target));
+                        updateFieldsFromSelectedHUD();
+                    }
+                ).bounds(x + 10, currentY, widgetW, 20).build();
+                addContextMenuWidget(shadowBtn);
+                currentY += 22;
+
+                EditBox scaleBox = new EditBox(CLIENT.font, x + 60, currentY, widgetW - 50, 18, Component.literal("Scale"));
+                scaleBox.setValue(String.valueOf(target.getSettings().scale));
+                scaleBox.setResponder(text -> {
+                    try {
+                        float val = Float.parseFloat(text);
+                        HUDAction act = onScaleFieldChanged(target, target.getSettings().scale, val);
+                        if (act != null) history.execute(act);
+                    } catch (NumberFormatException ignored) {}
+                });
+                addContextMenuWidget(scaleBox);
+                currentY += 22;
+
+                EditBox templateBox = new EditBox(CLIENT.font, x + 60, currentY, widgetW - 50, 18, Component.literal("Text"));
+                templateBox.setTooltip(Tooltip.create(Component.literal("Use placeholders like %fps% or %ping%")));
+                templateBox.setValue(target.getSettings().textTemplate == null ? "" : target.getSettings().textTemplate);
+                templateBox.setResponder(text -> {
+                    target.getSettings().textTemplate = text;
+                    target.update();
+                });
+                addContextMenuWidget(templateBox);
             }
         } else {
-            // Empty Space Menu placeholder (for step 3)
-            contextMenuWidth = 160;
-            contextMenuHeight = 40;
+            if (!contextMenuOpen) {
+                contextMenuSearchFilter = "";
+                contextMenuScrollOffset = 0;
+            }
+
+            contextMenuWidth = 180;
+            List<AbstractHUD> disabledHUDs = getDisabledHUDsFiltered(contextMenuSearchFilter);
+            boolean showCustom = "custom".contains(contextMenuSearchFilter.toLowerCase()) || "пользовательский".contains(contextMenuSearchFilter.toLowerCase());
+
+            int totalListCount = disabledHUDs.size() + (showCustom ? 1 : 0);
+            int visibleCount = Math.min(5, totalListCount);
+
+            contextMenuHeight = 25 + 22 + (22 * visibleCount) + 15;
+
             if (x + contextMenuWidth > this.width) x = this.width - contextMenuWidth - 5;
             if (y + contextMenuHeight > this.height) y = this.height - contextMenuHeight - 5;
             if (x < 5) x = 5;
             if (y < 5) y = 5;
             contextMenuX = x;
             contextMenuY = y;
+
+            int currentY = y + 25;
+            int widgetW = contextMenuWidth - 20;
+
+            EditBox searchBox = new EditBox(CLIENT.font, x + 10, currentY, widgetW, 18, Component.literal("Search..."));
+            searchBox.setValue(contextMenuSearchFilter);
+            searchBox.setResponder(text -> {
+                contextMenuSearchFilter = text;
+                contextMenuScrollOffset = 0;
+                rebuildEmptySpaceMenu(contextMenuX, contextMenuY);
+            });
+            addContextMenuWidget(searchBox);
+            searchBox.setFocused(true);
+            setFocused(searchBox);
+            currentY += 22;
+
+            int startIdx = Math.min(contextMenuScrollOffset, Math.max(0, totalListCount - 5));
+            for (int i = 0; i < visibleCount; i++) {
+                int index = startIdx + i;
+                if (index >= totalListCount) break;
+
+                if (index < disabledHUDs.size()) {
+                    AbstractHUD hudToSpawn = disabledHUDs.get(index);
+                    Button spawnBtn = Button.builder(
+                        Component.literal(hudToSpawn.getName()),
+                        btn -> {
+                            hudToSpawn.getSettings().shouldRender = true;
+                            hudToSpawn.getSettings().textTemplate = "";
+
+                            float guiScale = CLIENT.getWindow().getGuiScale();
+                            int fbX = (int) (contextMenuX * guiScale);
+                            int fbY = (int) (contextMenuY * guiScale);
+
+                            hudToSpawn.getSettings().originX = ScreenAlignmentX.LEFT;
+                            hudToSpawn.getSettings().originY = ScreenAlignmentY.TOP;
+                            hudToSpawn.getSettings().growthDirectionX = GrowthDirectionX.RIGHT;
+                            hudToSpawn.getSettings().growthDirectionY = GrowthDirectionY.DOWN;
+                            hudToSpawn.getSettings().x = fbX;
+                            hudToSpawn.getSettings().y = fbY;
+                            hudToSpawn.update();
+
+                            updateHUDAlignment(hudToSpawn);
+
+                            if (!Main.settings.hudList.individualHudIds.contains(hudToSpawn.getId())) {
+                                Main.settings.hudList.individualHudIds.add(hudToSpawn.getId());
+                            }
+
+                            HUDComponent.getInstance().updateActiveHUDs();
+                            selectedHUDs.clear();
+                            selectedHUDs.add(hudToSpawn);
+                            updateFieldsFromSelectedHUD();
+                            updateGroupFieldFromSelectedHUD();
+                            closeContextMenu();
+                        }
+                    ).bounds(x + 10, currentY, widgetW, 20).build();
+                    addContextMenuWidget(spawnBtn);
+                } else {
+                    Button spawnBtn = Button.builder(
+                        Component.literal("+ Пользовательский"),
+                        btn -> {}
+                    ).bounds(x + 10, currentY, widgetW, 20).build();
+                    spawnBtn.active = false;
+                    addContextMenuWidget(spawnBtn);
+                }
+                currentY += 22;
+            }
         }
     }
 

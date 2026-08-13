@@ -59,22 +59,22 @@ public class  BiomeHUD extends AbstractHUD {
         BlockPos blockPos = CLIENT.player.getOnPos();
         Holder<Biome> currentBiome = CLIENT.level.getBiome(blockPos);
 
-        if (cachedBiome != currentBiome) {
+        if (cachedBiome != currentBiome || getSettings().textTemplate != null) {
             Optional<ResourceKey<Biome>> biomeKey = currentBiome.unwrapKey();
 
+            String rawBiomeName = "Unknown";
             if (biomeKey.isPresent()) {
                 Identifier biomeId = biomeKey.get().identifier();
                 String translatableKey = "biome." + biomeId.getNamespace() + '.' + biomeId.getPath();
 
-                // if it has translation we get the translation, else we just convert it to Pascal Case manually.
                 if (Language.getInstance().has(translatableKey))
-                    cachedBiomeNameText = Component.translatable(translatableKey).getVisualOrderText();
+                    rawBiomeName = Component.translatable(translatableKey).getString();
                 else
-                    cachedBiomeNameText = Component.nullToEmpty(Helper.idNameFormatter(currentBiome.getRegisteredName())).getVisualOrderText();
-
-            } else {
-                cachedBiomeNameText = Component.nullToEmpty("Unregistered").getVisualOrderText();
+                    rawBiomeName = Helper.idNameFormatter(currentBiome.getRegisteredName());
             }
+
+            String formatted = getFormattedText(rawBiomeName);
+            cachedBiomeNameText = Component.literal(formatted).getVisualOrderText();
 
             cachedBiome = currentBiome;
             cachedTextWidth = textRenderer.width(cachedBiomeNameText) - 1;
