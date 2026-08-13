@@ -529,7 +529,6 @@ public class EditHUDScreen extends Screen {
 
         addRenderableWidget(configScreenButton);
 
-        addRenderableWidget(groupUngroupButton);
         addRenderableWidget(gapField);
         addRenderableWidget(childAlignmentButton);
         addRenderableWidget(childOrderingButton);
@@ -2150,11 +2149,12 @@ public class EditHUDScreen extends Screen {
 
             int heightNeeded = 25 + 15;
             if (isMultiSelection) {
-                heightNeeded += 25;
-            } else if (isGroup) {
-                heightNeeded += 22 * 5;
-            } else {
+                heightNeeded += 22;
+            }
+            if (isGroup) {
                 heightNeeded += 22 * 6;
+            } else {
+                heightNeeded += 22 * 7;
             }
 
             contextMenuHeight = heightNeeded;
@@ -2185,7 +2185,10 @@ public class EditHUDScreen extends Screen {
                     }
                 ).bounds(x + 10, currentY, widgetW, 20).build();
                 addContextMenuWidget(groupBtn);
-            } else if (isGroup) {
+                currentY += 22;
+            }
+
+            if (isGroup) {
                 GroupedHUD groupedHUD = (GroupedHUD) target;
 
                 Button settingsBtn = Button.builder(
@@ -2195,6 +2198,23 @@ public class EditHUDScreen extends Screen {
                     }
                 ).bounds(x + 10, currentY, widgetW, 20).build();
                 addContextMenuWidget(settingsBtn);
+                currentY += 22;
+
+                Button onOffBtn = Button.builder(
+                    Component.literal("Status: ON"),
+                    btn -> {
+                        List<HUDAction> acts = new ArrayList<>();
+                        for (AbstractHUD subHud : groupedHUD.huds) {
+                            HUDAction act = onShouldRenderChanged(subHud, false);
+                            if (act != null) acts.add(act);
+                        }
+                        if (!acts.isEmpty()) {
+                            history.execute(new CompositeAction(acts));
+                        }
+                        closeContextMenu();
+                    }
+                ).bounds(x + 10, currentY, widgetW, 20).build();
+                addContextMenuWidget(onOffBtn);
                 currentY += 22;
 
                 Button ungroupBtn = Button.builder(
@@ -2254,6 +2274,22 @@ public class EditHUDScreen extends Screen {
                 addContextMenuWidget(settingsBtn);
                 currentY += 22;
 
+                Button onOffBtn = Button.builder(
+                    Component.literal("Status: ").append(target.getSettings().shouldRender() ? Component.translatable("lryq_hud.screen.status.on") : Component.translatable("lryq_hud.screen.status.off")),
+                    btn -> {
+                        boolean nextVal = !target.getSettings().shouldRender();
+                        HUDAction act = onShouldRenderChanged(target, nextVal);
+                        if (act != null) history.execute(act);
+                        btn.setMessage(Component.literal("Status: ").append(target.getSettings().shouldRender() ? Component.translatable("lryq_hud.screen.status.on") : Component.translatable("lryq_hud.screen.status.off")));
+                        updateFieldsFromSelectedHUD();
+                        if (!nextVal) {
+                            closeContextMenu();
+                        }
+                    }
+                ).bounds(x + 10, currentY, widgetW, 20).build();
+                addContextMenuWidget(onOffBtn);
+                currentY += 22;
+
                 Button displayModeBtn = Button.builder(
                     Component.translatable("lryq_hud.screen.button.display", target.getSettings().getDisplayMode().toString()),
                     btn -> {
@@ -2306,7 +2342,6 @@ public class EditHUDScreen extends Screen {
                 currentY += 22;
 
                 EditBox templateBox = new EditBox(CLIENT.font, x + 60, currentY, widgetW - 50, 18, Component.literal("Text"));
-                templateBox.setTooltip(Tooltip.create(Component.literal("Use placeholders like %fps% or %ping%")));
                 templateBox.setValue(target.getSettings().textTemplate == null ? "" : target.getSettings().textTemplate);
                 templateBox.setResponder(text -> {
                     target.getSettings().textTemplate = text;
