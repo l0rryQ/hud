@@ -16,8 +16,8 @@ public class ServerInfoHUD extends AbstractHUD {
 
     private static final ServerInfoSettings SETTINGS = Main.settings.serverInfoSettings;
 
-    private static final Identifier WORLD_ICON = Identifier.fromNamespaceAndPath("lryq-hud", "hud/world_info.png");
-    private static final Identifier SERVER_ICON = Identifier.fromNamespaceAndPath("lryq-hud", "hud/server_info.png");
+    private static final Identifier WORLD_ICON = Identifier.fromNamespaceAndPath("lryq-hud", "hud/day.png");
+    private static final Identifier SERVER_ICON = Identifier.fromNamespaceAndPath("lryq-hud", "hud/player_count.png");
 
     private static final int ICON_WIDTH = 13;
     private static final int ICON_HEIGHT = 13;
