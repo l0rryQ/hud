@@ -98,6 +98,7 @@ public class EditHUDScreen extends Screen {
     private int contextMenuHeight;
     private final List<net.minecraft.client.gui.components.events.GuiEventListener> contextMenuWidgets = new ArrayList<>();
     private AbstractHUD contextMenuTargetHUD = null; // null means empty space
+    private AbstractHUD contextMenuClickedSubHUD = null;
     private String contextMenuSearchFilter = "";
     private int contextMenuScrollOffset = 0;
 
@@ -607,9 +608,24 @@ public class EditHUDScreen extends Screen {
 
             // Title Text
             if (contextMenuTargetHUD != null) {
-                context.text(CLIENT.font, contextMenuTargetHUD.getName(), contextMenuX + 10, contextMenuY + 10, 0xFFFFFFFF, true);
+                String title = contextMenuTargetHUD.getName();
+                if (CLIENT.font.width(title) > 160) {
+                    while (!title.isEmpty() && CLIENT.font.width(title + "...") > 160) {
+                        title = title.substring(0, title.length() - 1);
+                    }
+                    title = title + "...";
+                }
+                context.text(CLIENT.font, title, contextMenuX + 10, contextMenuY + 10, 0xFFFFFFFF, true);
             } else {
-                context.text(CLIENT.font, Component.translatable("lryq_hud.menu.add_elements"), contextMenuX + 10, contextMenuY + 10, 0xFFFFFFFF, true);
+                Component rawTitle = Component.translatable("lryq_hud.menu.add_elements");
+                String title = rawTitle.getString();
+                if (CLIENT.font.width(title) > 160) {
+                    while (!title.isEmpty() && CLIENT.font.width(title + "...") > 160) {
+                        title = title.substring(0, title.length() - 1);
+                    }
+                    title = title + "...";
+                }
+                context.text(CLIENT.font, title, contextMenuX + 10, contextMenuY + 10, 0xFFFFFFFF, true);
             }
 
             // Labels for EditBoxes like Scale or Gap
@@ -750,6 +766,10 @@ public class EditHUDScreen extends Screen {
             double mouseX = click.x();
             double mouseY = click.y();
             AbstractHUD target = getHUDAtPosition(mouseX, mouseY);
+            if (target == null) {
+                contextMenuSearchFilter = "";
+                contextMenuScrollOffset = 0;
+            }
             openContextMenu(mouseX, mouseY, target);
             return true;
         }
@@ -2137,19 +2157,21 @@ public class EditHUDScreen extends Screen {
         closeContextMenu();
 
         contextMenuTargetHUD = target;
+        contextMenuClickedSubHUD = null;
+        if (target instanceof GroupedHUD groupedHUD) {
+            for (AbstractHUD subHud : groupedHUD.huds) {
+                if (subHud.isHovered(mouseX, mouseY)) {
+                    contextMenuClickedSubHUD = subHud;
+                    break;
+                }
+            }
+        }
         contextMenuOpen = true;
 
         int x = (int) mouseX;
         int y = (int) mouseY;
 
-        String titleText = "";
-        if (target != null) {
-            titleText = target.getName();
-        } else {
-            titleText = Component.translatable("lryq_hud.menu.add_elements").getString();
-        }
-        int textW = CLIENT.font.width(titleText);
-        contextMenuWidth = Math.max(180, textW + 24);
+        contextMenuWidth = 180;
 
         if (target != null) {
             boolean isGroup = target instanceof GroupedHUD;
@@ -2162,7 +2184,7 @@ public class EditHUDScreen extends Screen {
             if (isGroup) {
                 heightNeeded += 22 * 6;
             } else {
-                heightNeeded += 22 * 7;
+                heightNeeded += 22 * (isCustomHUDElement(target) ? 7 : 6);
             }
 
             contextMenuHeight = heightNeeded;
@@ -2202,7 +2224,7 @@ public class EditHUDScreen extends Screen {
                 Button settingsBtn = Button.builder(
                     Component.literal("Settings"),
                     btn -> {
-                        openConfigScreenForHUD(target);
+                        openConfigScreenForHUD(contextMenuClickedSubHUD != null ? contextMenuClickedSubHUD : target);
                     }
                 ).bounds(x + 10, currentY, widgetW, 20).build();
                 addContextMenuWidget(settingsBtn);
@@ -2368,13 +2390,15 @@ public class EditHUDScreen extends Screen {
                 addContextMenuWidget(scaleBox);
                 currentY += 22;
 
-                EditBox templateBox = new EditBox(CLIENT.font, x + 60, currentY, widgetW - 50, 18, Component.literal("Text"));
-                templateBox.setValue(target.getSettings().textTemplate == null ? "" : target.getSettings().textTemplate);
-                templateBox.setResponder(text -> {
-                    target.getSettings().textTemplate = text;
-                    target.update();
-                });
-                addContextMenuWidget(templateBox);
+                if (isCustomHUDElement(target)) {
+                    EditBox templateBox = new EditBox(CLIENT.font, x + 60, currentY, widgetW - 50, 18, Component.literal("Text"));
+                    templateBox.setValue(target.getSettings().textTemplate == null ? "" : target.getSettings().textTemplate);
+                    templateBox.setResponder(text -> {
+                        target.getSettings().textTemplate = text;
+                        target.update();
+                    });
+                    addContextMenuWidget(templateBox);
+                }
             }
         } else {
             if (!contextMenuOpen) {

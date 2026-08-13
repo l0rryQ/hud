@@ -105,8 +105,8 @@ public class InventoryHUD extends AbstractHUD {
         int gap = HUD_SETTINGS.iconInfoGap;
 
         if (drawBackground) {
-            if (gap <= 0) {
-                RenderUtils.fillRounded(context, x, y, x + w, y + h, 0x80000000);
+            if (gap <= 0 || !HUD_SETTINGS.drawBackgroundRounded) {
+                context.fill(x, y, x + w, y + h, 0x80000000);
             } else {
                 RenderUtils.drawTextureHUD(context, INVENTORY_TEXTURE_VERTICAL, x, y, 0.0F, 0.0F, TEXTURE_WIDTH_VERTICAL, TEXTURE_HEIGHT_VERTICAL, TEXTURE_WIDTH_VERTICAL, TEXTURE_HEIGHT_VERTICAL);
             }
@@ -137,8 +137,8 @@ public class InventoryHUD extends AbstractHUD {
         int gap = HUD_SETTINGS.iconInfoGap;
 
         if (drawBackground) {
-            if (gap <= 0) {
-                RenderUtils.fillRounded(context, x, y, x + w, y + h, 0x80000000);
+            if (gap <= 0 || !HUD_SETTINGS.drawBackgroundRounded) {
+                context.fill(x, y, x + w, y + h, 0x80000000);
             } else {
                 RenderUtils.drawTextureHUD(context, INVENTORY_TEXTURE, x, y, 0.0F, 0.0F, TEXTURE_WIDTH_HORIZONTAL, TEXTURE_HEIGHT_HORIZONTAL, TEXTURE_WIDTH_HORIZONTAL, TEXTURE_HEIGHT_HORIZONTAL);
             }

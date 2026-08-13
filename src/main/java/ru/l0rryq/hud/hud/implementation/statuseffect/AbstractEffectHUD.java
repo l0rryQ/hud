@@ -205,7 +205,11 @@ public abstract class AbstractEffectHUD extends AbstractHUD {
         if (size == 0) return false;
 
         if (drawBackground && combineBackground) {
-            RenderUtils.fillRounded(context, x, y, x + getWidth(), y + getHeight(), 0x80000000);
+            if (HUD_SETTINGS.drawBackgroundRounded) {
+                RenderUtils.fillRounded(context, x, y, x + getWidth(), y + getHeight(), 0x80000000);
+            } else {
+                context.fill(x, y, x + getWidth(), y + getHeight(), 0x80000000);
+            }
             drawBackground = false; // don't allow instances to draw background if they're combined.
         }
 
@@ -271,7 +275,7 @@ public abstract class AbstractEffectHUD extends AbstractHUD {
 
         if (drawBackground) {
             if (gap <= 0) {
-                if (isAmbient) {
+                if (isAmbient && HUD_SETTINGS.drawBackgroundRounded) {
                     // evil stretching hack.
                     int iconHeight = ICON_HEIGHT + INFO_HEIGHT;
                     int stretchHeight = ICON_HEIGHT + gap + INFO_HEIGHT;
@@ -287,18 +291,26 @@ public abstract class AbstractEffectHUD extends AbstractHUD {
                             color
                     );
                 } else {
-                    RenderUtils.fillRounded(context, x, y, x + ICON_WIDTH, y + ICON_HEIGHT + gap + INFO_HEIGHT, 0x80000000);
+                    if (HUD_SETTINGS.drawBackgroundRounded) {
+                        RenderUtils.fillRounded(context, x, y, x + ICON_WIDTH, y + ICON_HEIGHT + gap + INFO_HEIGHT, 0x80000000);
+                    } else {
+                        context.fill(x, y, x + ICON_WIDTH, y + ICON_HEIGHT + gap + INFO_HEIGHT, 0x80000000);
+                    }
                 }
             } else {
-                RenderUtils.drawTextureHUD(
-                        context,
-                        isAmbient ? STATUS_EFFECT_AMBIENT_TEXTURE : STATUS_EFFECT_TEXTURE,
-                        x, y,
-                        0.0F, 0.0F,
-                        STATUS_EFFECT_TEXTURE_WIDTH, STATUS_EFFECT_TEXTURE_HEIGHT,
-                        STATUS_EFFECT_TEXTURE_WIDTH, STATUS_EFFECT_TEXTURE_HEIGHT,
-                        isAmbient ? color : 0xFFFFFFFF
-                );
+                if (HUD_SETTINGS.drawBackgroundRounded) {
+                    RenderUtils.drawTextureHUD(
+                            context,
+                            isAmbient ? STATUS_EFFECT_AMBIENT_TEXTURE : STATUS_EFFECT_TEXTURE,
+                            x, y,
+                            0.0F, 0.0F,
+                            STATUS_EFFECT_TEXTURE_WIDTH, STATUS_EFFECT_TEXTURE_HEIGHT,
+                            STATUS_EFFECT_TEXTURE_WIDTH, STATUS_EFFECT_TEXTURE_HEIGHT,
+                            isAmbient ? color : 0xFFFFFFFF
+                    );
+                } else {
+                    context.fill(x, y, x + STATUS_EFFECT_TEXTURE_WIDTH, y + STATUS_EFFECT_TEXTURE_HEIGHT, 0x80000000);
+                }
             }
         }
 
