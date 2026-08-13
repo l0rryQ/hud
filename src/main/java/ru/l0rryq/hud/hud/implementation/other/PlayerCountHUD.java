@@ -62,6 +62,7 @@ public class PlayerCountHUD extends AbstractHUD  {
         if (SETTINGS.showMaxPlayer && maxPlayer > 0)
             str += "/" + maxPlayer;
 
+        str = getFormattedText(str);
         int strWidth = CLIENT.font.width(str) - 1;
 
         displayMode = getSettings().getDisplayMode();

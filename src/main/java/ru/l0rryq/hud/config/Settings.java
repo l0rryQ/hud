@@ -33,6 +33,10 @@ public class Settings implements ConfigData{
     @ConfigEntry.Gui.TransitiveObject
     public FPSSettings fpsSettings = new FPSSettings();
 
+    @ConfigEntry.Category("server_ip")
+    @ConfigEntry.Gui.TransitiveObject
+    public ServerInfoSettings serverInfoSettings = new ServerInfoSettings();
+
     @ConfigEntry.Category("armor")
     @ConfigEntry.Gui.TransitiveObject
     public Armor armorSettings = new Armor();
@@ -268,6 +272,9 @@ public class Settings implements ConfigData{
 
         if (fpsSettings.base == null)
             fpsSettings = new FPSSettings();
+
+        if (serverInfoSettings == null || serverInfoSettings.base == null)
+            serverInfoSettings = new ServerInfoSettings();
 
         if (tpsSettings.base == null)
             tpsSettings = new TPSSettings();

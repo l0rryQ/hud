@@ -55,6 +55,9 @@ public class BaseHUDSettings implements ConfigData {
     @ConfigEntry.Gui.Excluded
     public float scale = 0;
 
+    @ConfigEntry.Gui.Excluded
+    public String textTemplate = "";
+
     @Comment("Modify HUD Based on Conditions.")
     public List<ConditionalSettings> conditions = new ArrayList<>();
 
@@ -220,7 +223,8 @@ public class BaseHUDSettings implements ConfigData {
                 && (this.conditions.equals(other.conditions))
                 && (this.displayMode == other.displayMode)
                 && (this.drawBackground == other.drawBackground)
-                && (this.drawTextShadow == other.drawTextShadow);
+                && (this.drawTextShadow == other.drawTextShadow)
+                && ((this.textTemplate == null && other.textTemplate == null) || (this.textTemplate != null && this.textTemplate.equals(other.textTemplate)));
     }
 
     public void copyFrom(BaseHUDSettings src) {
@@ -235,6 +239,7 @@ public class BaseHUDSettings implements ConfigData {
         this.displayMode = src.displayMode;
         this.drawBackground = src.drawBackground;
         this.drawTextShadow = src.drawTextShadow;
+        this.textTemplate = src.textTemplate;
         this.conditions.clear();
         this.conditions.addAll(src.conditions);
     }

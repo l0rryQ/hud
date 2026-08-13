@@ -35,7 +35,7 @@ public abstract class AbstractCoordinateHUD extends AbstractHUD {
 
     @Override
     public boolean collectHUDInformation() {
-        coordStr = Integer.toString(getCoord());
+        coordStr = getFormattedText(Integer.toString(getCoord()));
         int strWidth = CLIENT.font.width(coordStr) - 1;
 
         displayMode = getSettings().getDisplayMode();

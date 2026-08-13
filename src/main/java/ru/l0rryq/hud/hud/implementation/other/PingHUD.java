@@ -75,7 +75,7 @@ public class PingHUD extends AbstractHUD {
             int pingLogLen = pingLog.size();
             if (pingLogLen > 0) {
                 long currentPing = pingLog.get(pingLogLen - 1);
-                pingStr = currentPing + SETTINGS.additionalString;
+                pingStr = getFormattedText(currentPing + SETTINGS.additionalString);
                 strWidth = CLIENT.font.width(pingStr) - 1;
 
                 step = Math.min((int) currentPing / 150, 3);
