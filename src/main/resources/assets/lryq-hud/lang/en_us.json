@@ -394,5 +394,12 @@
   "text.autoconfig.lryq_hud.option.inventorySpaceSettings.base.conditions": "Conditions",
   "text.autoconfig.lryq_hud.option.inventorySpaceSettings.color": "Color",
   "text.autoconfig.lryq_hud.option.inventorySpaceSettings.showRemaining": "Show Remaining",
-  "text.autoconfig.lryq_hud.option.inventorySpaceSettings.showMaxSlot": "Show Max Slot"
+  "text.autoconfig.lryq_hud.option.inventorySpaceSettings.showMaxSlot": "Show Max Slot",
+  "text.autoconfig.lryq_hud.option.serverInfoSettings.base.shouldRender": "Show HUD",
+  "text.autoconfig.lryq_hud.option.serverInfoSettings.base.conditions": "Conditions",
+  "text.autoconfig.lryq_hud.option.serverInfoSettings.color": "Color",
+  "text.autoconfig.lryq_hud.option.serverInfoSettings.additionalString": "Extra Label",
+  "text.autoconfig.lryq_hud.option.serverInfoSettings.showOnlyOnServers": "Show Only on Servers",
+  "lryq_hud.menu.add_elements": "Add Elements",
+  "lryq_hud.menu.custom_element": "Custom Element"
 }

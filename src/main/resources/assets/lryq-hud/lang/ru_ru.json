@@ -335,5 +335,12 @@
   "text.autoconfig.lryq_hud.option.speedSettings.base.conditions": "Условия",
   "text.autoconfig.lryq_hud.option.speedSettings.color": "Цвет",
   "text.autoconfig.lryq_hud.option.speedSettings.useFullSpeed": "Использовать полную скорость",
-  "text.autoconfig.lryq_hud.option.speedSettings.additionalString": "Дополнительная этикетка"
+  "text.autoconfig.lryq_hud.option.speedSettings.additionalString": "Дополнительная этикетка",
+  "text.autoconfig.lryq_hud.option.serverInfoSettings.base.shouldRender": "Отображать HUD",
+  "text.autoconfig.lryq_hud.option.serverInfoSettings.base.conditions": "Условия",
+  "text.autoconfig.lryq_hud.option.serverInfoSettings.color": "Цвет счетчика",
+  "text.autoconfig.lryq_hud.option.serverInfoSettings.additionalString": "Дополнительная этикетка",
+  "text.autoconfig.lryq_hud.option.serverInfoSettings.showOnlyOnServers": "Показывать только на серверах",
+  "lryq_hud.menu.add_elements": "Добавить элементы",
+  "lryq_hud.menu.custom_element": "Пользовательский элемент"
 }

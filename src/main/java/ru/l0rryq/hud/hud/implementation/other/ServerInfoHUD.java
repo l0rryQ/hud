@@ -16,10 +16,8 @@ public class ServerInfoHUD extends AbstractHUD {
 
     private static final ServerInfoSettings SETTINGS = Main.settings.serverInfoSettings;
 
-    // We'll use a built-in icon sprite/texture for singleplayer or fallback if favicon is not available.
-    // Minecraft uses "world_list/world_icon" sprite, or we can use custom icons. Let's make a fallback identifier or use world icon sprite.
-    private static final Identifier WORLD_ICON = Identifier.fromNamespaceAndPath("minecraft", "textures/gui/sprites/world_list/world_icon.png");
-    private static final Identifier DEFAULT_FAVICON = Identifier.fromNamespaceAndPath("minecraft", "textures/misc/unknown_server.png");
+    private static final Identifier WORLD_ICON = Identifier.fromNamespaceAndPath("lryq-hud", "hud/world_info.png");
+    private static final Identifier SERVER_ICON = Identifier.fromNamespaceAndPath("lryq-hud", "hud/server_info.png");
 
     private static final int ICON_WIDTH = 13;
     private static final int ICON_HEIGHT = 13;
@@ -37,7 +35,8 @@ public class ServerInfoHUD extends AbstractHUD {
     public boolean collectHUDInformation() {
         if (CLIENT.player == null) return false;
 
-        if (CLIENT.isLocalServer()) {
+        boolean isSingleplayer = CLIENT.isLocalServer() || CLIENT.getCurrentServer() == null;
+        if (isSingleplayer) {
             if (SETTINGS.showOnlyOnServers) {
                 return false;
             }
@@ -78,16 +77,8 @@ public class ServerInfoHUD extends AbstractHUD {
         int h = getHeight();
         int c = getColor();
 
-        // Singleplayer -> world icon. Multiplayer -> server icon if available, else default favicon.
-        Identifier texture = WORLD_ICON;
-        if (!CLIENT.isLocalServer()) {
-            // Note: Since downloading and keeping track of dynamic favicons in memory might require texture registration / dynamic textures
-            // or using the favicon texture that Minecraft already registers for server entries, we'll try to find if there is an existing texture
-            // registered or just fall back to standard icons.
-            // Let's check how ServerData favicon works. Often, ServerData.getIconBytes() is used, but it's loaded dynamically in Multiplayer screen.
-            // If there's no easy way to render dynamic favicon bytes without writing a custom dynamic texture class, we can fall back to a clean default server icon.
-            texture = DEFAULT_FAVICON;
-        }
+        boolean isSingleplayer = CLIENT.isLocalServer() || CLIENT.getCurrentServer() == null;
+        Identifier texture = isSingleplayer ? WORLD_ICON : SERVER_ICON;
 
         return RenderUtils.drawSmallHUD(
                 context,
