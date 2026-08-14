@@ -343,6 +343,7 @@
   "text.autoconfig.lryq_hud.option.serverInfoSettings.showOnlyOnServers": "Показывать только на серверах",
   "lryq_hud.menu.add_elements": "Добавить элементы",
   "lryq_hud.menu.custom_element": "+ Пользовательский",
-  "lryq_hud.menu.custom_tooltip": "Установите PlaceholderAPI для использования пользовательских элементов!",
+  "lryq_hud.menu.reset_vanilla": "Сбросить",
+  "lryq_hud.menu.toggle_vanilla": "Ванильные HUD: %s",
   "lryq_hud.screen.button.remove": "Скрыть"
 }

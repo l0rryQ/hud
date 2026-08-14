@@ -106,11 +106,9 @@ public class HUDComponent {
         registerHUD(new ru.l0rryq.hud.hud.implementation.vanilla.VanillaActionBarHUD());
         registerHUD(new ru.l0rryq.hud.hud.implementation.vanilla.VanillaBossBarHUD());
         registerHUD(new ru.l0rryq.hud.hud.implementation.vanilla.VanillaClosedCaptionHUD());
-        registerHUD(new ru.l0rryq.hud.hud.implementation.vanilla.VanillaDebugScreenHUD());
         registerHUD(new ru.l0rryq.hud.hud.implementation.vanilla.VanillaHotbarGroupHUD());
         registerHUD(new ru.l0rryq.hud.hud.implementation.vanilla.VanillaPlayerListHUD());
         registerHUD(new ru.l0rryq.hud.hud.implementation.vanilla.VanillaScoreboardHUD());
-        registerHUD(new ru.l0rryq.hud.hud.implementation.vanilla.VanillaToastMessageHUD());
     }
 
     public Map<String, AbstractHUD> getHudMap() {
