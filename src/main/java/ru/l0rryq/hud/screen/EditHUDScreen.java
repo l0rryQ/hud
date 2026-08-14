@@ -142,6 +142,11 @@ public class EditHUDScreen extends Screen {
         return false;
     }
 
+    private boolean isVanillaHUDElement(AbstractHUD target) {
+        if (target == null) return false;
+        return target.getId().startsWith("VANILLA_");
+    }
+
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (contextMenuOpen && contextMenuTargetHUD == null) {
@@ -167,6 +172,7 @@ public class EditHUDScreen extends Screen {
         List<AbstractHUD> result = new ArrayList<>();
         for (AbstractHUD hud : HUDComponent.getInstance().getHudMap().values()) {
             if (hud instanceof GroupedHUD) continue;
+            if (isVanillaHUDElement(hud)) continue; // Vanilla HUD elements are never in the add menu
             if (!hud.getSettings().shouldRender) {
                 if (filter.isEmpty() || hud.getName().toLowerCase().contains(filter.toLowerCase())) {
                     result.add(hud);
@@ -212,6 +218,10 @@ public class EditHUDScreen extends Screen {
     }
 
     private void openConfigScreenForHUD(AbstractHUD hud) {
+        if (isVanillaHUDElement(hud)) {
+            // Vanilla elements do not have a dedicated cloth config tab or we don't open settings for them.
+            return;
+        }
         Screen configScreen = AutoConfigClient.getConfigScreen(Settings.class, this).get();
         if (configScreen instanceof me.shedaniel.clothconfig2.gui.AbstractConfigScreen abstractScreen) {
             abstractScreen.selectedCategoryIndex = getCategoryIndexForHUD(hud);
@@ -1651,8 +1661,10 @@ public class EditHUDScreen extends Screen {
         } else {
             AbstractHUD firstHUD = selectedHUDs.getFirst();
 
+            boolean containsVanilla = selectedHUDs.stream().anyMatch(this::isVanillaHUDElement);
+
             canSelectedHUDUngroup =  (selectedHUDs.size() == 1 && firstHUD instanceof GroupedHUD && !firstHUD.isInGroup());
-            canSelectedHUDsGroup = (selectedHUDs.size() > 1 && selectedHUDs.stream().noneMatch(AbstractHUD::isInGroup));
+            canSelectedHUDsGroup = (!containsVanilla && selectedHUDs.size() > 1 && selectedHUDs.stream().noneMatch(AbstractHUD::isInGroup));
 
             if (canSelectedHUDsGroup) {
                 groupUngroupButton.setMessage(Component.translatable("lryq_hud.screen.button.group"));
@@ -1709,6 +1721,8 @@ public class EditHUDScreen extends Screen {
         } else {
             AbstractHUD firstHUD = selectedHUDs.getFirst();
             BaseHUDSettings settings = firstHUD.getSettings();
+            boolean isVanilla = isVanillaHUDElement(firstHUD);
+
             xField.setValue(String.valueOf(settings.x));
             yField.setValue(String.valueOf(settings.y));
             scaleField.setValue(String.valueOf(settings.getScale()));
@@ -1727,20 +1741,28 @@ public class EditHUDScreen extends Screen {
                     Component.translatable("lryq_hud.screen.status.off"));
 
             for (Button bw : moreOptionButtons) {
-                bw.active = true;
+                bw.active = !isVanilla;
             }
-
-            for (EditBox tfw : moreOptionTexts) {
-                tfw.setEditable(true);
-            }
+            // For Vanilla elements, we want to let them change X/Y/Scale, so those EditBoxes should remain editable!
+            xField.setEditable(true);
+            yField.setEditable(true);
+            scaleField.setEditable(true);
 
             gapField.visible = false;
             groupAlignmentButton.visible = false;
             childAlignmentButton.visible = false;
             childOrderingButton.visible = false;
 
-            if (isMoreOptionActivated)
+            if (isMoreOptionActivated) {
                 showMoreOptionsButtons();
+                if (isVanilla) {
+                    // Hide the non-editable vanilla options even if more options is activated
+                    hudDisplayButton.visible = false;
+                    drawBackgroundButton.visible = false;
+                    drawTextShadowButton.visible = false;
+                    shouldRenderButton.visible = false;
+                }
+            }
         }
         supressFieldEvents = false;
     }
@@ -2175,7 +2197,8 @@ public class EditHUDScreen extends Screen {
 
         if (target != null) {
             boolean isGroup = target instanceof GroupedHUD;
-            boolean isMultiSelection = selectedHUDs.size() > 1 && selectedHUDs.contains(target);
+            boolean isVanilla = isVanillaHUDElement(target);
+            boolean isMultiSelection = !isVanilla && selectedHUDs.size() > 1 && selectedHUDs.contains(target);
 
             int heightNeeded = 25 + 15;
             if (isMultiSelection) {
@@ -2184,7 +2207,11 @@ public class EditHUDScreen extends Screen {
             if (isGroup) {
                 heightNeeded += 22 * 6;
             } else {
-                heightNeeded += 22 * (isCustomHUDElement(target) ? 7 : 6);
+                if (isVanilla) {
+                    heightNeeded += 22 * 1; // Only Scale is customizable for vanilla!
+                } else {
+                    heightNeeded += 22 * (isCustomHUDElement(target) ? 7 : 6);
+                }
             }
 
             contextMenuHeight = heightNeeded;
@@ -2218,7 +2245,18 @@ public class EditHUDScreen extends Screen {
                 currentY += 22;
             }
 
-            if (isGroup) {
+            if (isVanilla) {
+                EditBox scaleBox = new EditBox(CLIENT.font, x + 60, currentY, widgetW - 50, 18, Component.literal("Scale"));
+                scaleBox.setValue(String.valueOf(target.getSettings().scale));
+                scaleBox.setResponder(text -> {
+                    try {
+                        float val = Float.parseFloat(text);
+                        HUDAction act = onScaleFieldChanged(target, target.getSettings().scale, val);
+                        if (act != null) history.execute(act);
+                    } catch (NumberFormatException ignored) {}
+                });
+                addContextMenuWidget(scaleBox);
+            } else if (isGroup) {
                 GroupedHUD groupedHUD = (GroupedHUD) target;
 
                 Button settingsBtn = Button.builder(
@@ -2483,6 +2521,7 @@ public class EditHUDScreen extends Screen {
                         btn -> {}
                     ).bounds(x + 10, currentY, widgetW, 20).build();
                     spawnBtn.active = false;
+                    spawnBtn.setTooltip(Tooltip.create(Component.translatable("lryq_hud.menu.custom_tooltip")));
                     addContextMenuWidget(spawnBtn);
                 }
                 currentY += 22;
