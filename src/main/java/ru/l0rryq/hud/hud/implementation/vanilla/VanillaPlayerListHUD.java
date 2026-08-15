@@ -18,7 +18,7 @@ public class VanillaPlayerListHUD extends AbstractHUD {
 
     @Override
     public boolean collectHUDInformation() {
-        setWidthHeight(250, 150);
+        setWidthHeight(500, 300);
         return true;
     }
 

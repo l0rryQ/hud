@@ -2,7 +2,6 @@ package ru.l0rryq.hud.mixin;
 
 import ru.l0rryq.hud.condition.HeldItemTooltip;
 import ru.l0rryq.hud.condition.ScoreboardHUD;
-import ru.l0rryq.hud.helper.VanillaTracker;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;

@@ -18,7 +18,7 @@ public class VanillaClosedCaptionHUD extends AbstractHUD {
 
     @Override
     public boolean collectHUDInformation() {
-        setWidthHeight(150, 60);
+        setWidthHeight(300, 120);
         return true;
     }
 

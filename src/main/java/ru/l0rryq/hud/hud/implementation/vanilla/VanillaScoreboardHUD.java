@@ -18,7 +18,7 @@ public class VanillaScoreboardHUD extends AbstractHUD {
 
     @Override
     public boolean collectHUDInformation() {
-        setWidthHeight(120, 150);
+        setWidthHeight(240, 300);
         return true;
     }
 

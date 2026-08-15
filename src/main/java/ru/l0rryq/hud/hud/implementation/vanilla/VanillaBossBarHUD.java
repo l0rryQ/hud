@@ -18,7 +18,7 @@ public class VanillaBossBarHUD extends AbstractHUD {
 
     @Override
     public boolean collectHUDInformation() {
-        setWidthHeight(182, 20);
+        setWidthHeight(364, 40);
         return true;
     }
 

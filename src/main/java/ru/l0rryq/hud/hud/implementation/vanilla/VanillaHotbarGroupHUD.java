@@ -18,7 +18,7 @@ public class VanillaHotbarGroupHUD extends AbstractHUD {
 
     @Override
     public boolean collectHUDInformation() {
-        setWidthHeight(182, 22);
+        setWidthHeight(364, 44);
         return true;
     }
 
