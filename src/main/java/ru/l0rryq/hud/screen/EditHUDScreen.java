@@ -138,47 +138,8 @@ public class EditHUDScreen extends Screen {
         return Component.translatable(target.groupSettings.alignVertical ? "lryq_hud.screen.button.group_alignment.vertical" : "lryq_hud.screen.button.group_alignment.horizontal");
     }
 
-    public static boolean showVanillaHUDsInEditScreen = true;
-
     private boolean isCustomHUDElement(AbstractHUD target) {
         return false;
-    }
-
-    private boolean isVanillaHUDElement(AbstractHUD target) {
-        if (target == null) return false;
-        return target.getId().startsWith("VANILLA_");
-    }
-
-    private void resetVanillaHUD(AbstractHUD target) {
-        if (target == null) return;
-        String id = target.getId();
-        BaseHUDSettings s = target.getSettings();
-        if (id.equals(HUDId.VANILLA_ACTION_BAR.toString())) {
-            s.x = 0; s.y = -53; s.scale = 1.0f;
-            s.originX = ScreenAlignmentX.CENTER; s.originY = ScreenAlignmentY.BOTTOM;
-            s.growthDirectionX = GrowthDirectionX.CENTER; s.growthDirectionY = GrowthDirectionY.UP;
-        } else if (id.equals(HUDId.VANILLA_BOSS_BAR.toString())) {
-            s.x = 0; s.y = 12; s.scale = 1.0f;
-            s.originX = ScreenAlignmentX.CENTER; s.originY = ScreenAlignmentY.TOP;
-            s.growthDirectionX = GrowthDirectionX.CENTER; s.growthDirectionY = GrowthDirectionY.DOWN;
-        } else if (id.equals(HUDId.VANILLA_CLOSED_CAPTION.toString())) {
-            s.x = -10; s.y = -50; s.scale = 1.0f;
-            s.originX = ScreenAlignmentX.RIGHT; s.originY = ScreenAlignmentY.BOTTOM;
-            s.growthDirectionX = GrowthDirectionX.LEFT; s.growthDirectionY = GrowthDirectionY.UP;
-        } else if (id.equals(HUDId.VANILLA_HOTBAR_GROUP.toString())) {
-            s.x = 0; s.y = 0; s.scale = 1.0f;
-            s.originX = ScreenAlignmentX.CENTER; s.originY = ScreenAlignmentY.BOTTOM;
-            s.growthDirectionX = GrowthDirectionX.CENTER; s.growthDirectionY = GrowthDirectionY.UP;
-        } else if (id.equals(HUDId.VANILLA_PLAYER_LIST.toString())) {
-            s.x = 0; s.y = 10; s.scale = 1.0f;
-            s.originX = ScreenAlignmentX.CENTER; s.originY = ScreenAlignmentY.TOP;
-            s.growthDirectionX = GrowthDirectionX.CENTER; s.growthDirectionY = GrowthDirectionY.DOWN;
-        } else if (id.equals(HUDId.VANILLA_SCOREBOARD.toString())) {
-            s.x = -10; s.y = 0; s.scale = 1.0f;
-            s.originX = ScreenAlignmentX.RIGHT; s.originY = ScreenAlignmentY.MIDDLE;
-            s.growthDirectionX = GrowthDirectionX.LEFT; s.growthDirectionY = GrowthDirectionY.MIDDLE;
-        }
-        target.update();
     }
 
     @Override
@@ -403,17 +364,6 @@ public class EditHUDScreen extends Screen {
                     AutoConfig.getConfigHolder(Settings.class).save();
                     onEditHUDClose();
         }).bounds(xSaveAndQuitButton, yBottom, terminatorWidth, WIDGET_HEIGHT).build();
-
-        int vanillaBtnWidth = 110;
-        int xToggleVanilla = xSaveAndQuitButton + terminatorWidth + GAP;
-        Button toggleVanillaButton = Button.builder(
-                Component.translatable("lryq_hud.menu.toggle_vanilla", showVanillaHUDsInEditScreen ? Component.translatable("lryq_hud.screen.status.on") : Component.translatable("lryq_hud.screen.status.off")),
-                button -> {
-                    showVanillaHUDsInEditScreen = !showVanillaHUDsInEditScreen;
-                    button.setMessage(Component.translatable("lryq_hud.menu.toggle_vanilla", showVanillaHUDsInEditScreen ? Component.translatable("lryq_hud.screen.status.on") : Component.translatable("lryq_hud.screen.status.off")));
-                }
-        ).bounds(xToggleVanilla, yBottom, vanillaBtnWidth, WIDGET_HEIGHT).build();
-        addRenderableWidget(toggleVanillaButton);
 
         int xCancelButton = xHelpButton - GAP - terminatorWidth;
 
@@ -763,13 +713,11 @@ public class EditHUDScreen extends Screen {
 
         PixelPlacement.start(context);
         for (AbstractHUD hud : HUDComponent.getInstance().getRenderedHUDs()) {
-            if (!showVanillaHUDsInEditScreen && isVanillaHUDElement(hud)) continue;
             renderBoundingBox(context, hud, mouseX, mouseY);
         }
 
         for (AbstractHUD hud : selectedHUDs) {
             if (!hud.getSettings().shouldRender) continue;
-            if (!showVanillaHUDsInEditScreen && isVanillaHUDElement(hud)) continue;
             renderSelectedBox(context, hud);
         }
         PixelPlacement.end(context);
@@ -872,7 +820,7 @@ public class EditHUDScreen extends Screen {
 
         if (!selectedHUDs.isEmpty()) {
             AbstractHUD hud = selectedHUDs.getFirst();
-            if ((showVanillaHUDsInEditScreen || !isVanillaHUDElement(hud)) && hud.isHovered(mouseX, mouseY)) {
+            if (hud.isHovered(mouseX, mouseY)) {
                 sameHUDClicked = true;
                 return hud;
             }
@@ -880,14 +828,12 @@ public class EditHUDScreen extends Screen {
         sameHUDClicked = false;
 
         for (AbstractHUD hud : selectedHUDs) {
-            if (!showVanillaHUDsInEditScreen && isVanillaHUDElement(hud)) continue;
             if (hud.isHovered(mouseX, mouseY)) {
                 return hud;
             }
         }
 
         for (AbstractHUD hud : HUDComponent.getInstance().getRenderedHUDs()) {
-            if (!showVanillaHUDsInEditScreen && isVanillaHUDElement(hud)) continue;
             if (hud.isHovered(mouseX, mouseY)) {
                 return hud;
             }
@@ -2229,8 +2175,7 @@ public class EditHUDScreen extends Screen {
 
         if (target != null) {
             boolean isGroup = target instanceof GroupedHUD;
-            boolean isVanilla = isVanillaHUDElement(target);
-            boolean isMultiSelection = !isVanilla && selectedHUDs.size() > 1 && selectedHUDs.contains(target);
+            boolean isMultiSelection = selectedHUDs.size() > 1 && selectedHUDs.contains(target);
 
             int heightNeeded = 25 + 15;
             if (isMultiSelection) {
@@ -2238,8 +2183,6 @@ public class EditHUDScreen extends Screen {
             }
             if (isGroup) {
                 heightNeeded += 22 * 6;
-            } else if (isVanilla) {
-                heightNeeded += 22 * 2;
             } else {
                 heightNeeded += 22 * (isCustomHUDElement(target) ? 7 : 6);
             }
@@ -2275,33 +2218,11 @@ public class EditHUDScreen extends Screen {
                 currentY += 22;
             }
 
-            if (isVanilla) {
-                EditBox scaleBox = new EditBox(CLIENT.font, x + 60, currentY, widgetW - 50, 18, Component.literal("Scale"));
-                scaleBox.setValue(String.valueOf(target.getSettings().scale));
-                scaleBox.setResponder(text -> {
-                    try {
-                        float val = Float.parseFloat(text);
-                        HUDAction act = onScaleFieldChanged(target, target.getSettings().scale, val);
-                        if (act != null) history.execute(act);
-                    } catch (NumberFormatException ignored) {}
-                });
-                addContextMenuWidget(scaleBox);
-                currentY += 22;
-
-                Button resetBtn = Button.builder(
-                    Component.translatable("lryq_hud.menu.reset_vanilla"),
-                    btn -> {
-                        resetVanillaHUD(target);
-                        updateFieldsFromSelectedHUD();
-                        closeContextMenu();
-                    }
-                ).bounds(x + 10, currentY, widgetW, 20).build();
-                addContextMenuWidget(resetBtn);
-            } else if (isGroup) {
+            if (isGroup) {
                 GroupedHUD groupedHUD = (GroupedHUD) target;
 
                 Button settingsBtn = Button.builder(
-                    Component.literal("Settings"),
+                    Component.translatable("lryq_hud.menu.settings"),
                     btn -> {
                         openConfigScreenForHUD(contextMenuClickedSubHUD != null ? contextMenuClickedSubHUD : target);
                     }
@@ -2375,7 +2296,7 @@ public class EditHUDScreen extends Screen {
                 addContextMenuWidget(childAlignBtn);
             } else {
                 Button settingsBtn = Button.builder(
-                    Component.literal("Settings"),
+                    Component.translatable("lryq_hud.menu.settings"),
                     btn -> {
                         openConfigScreenForHUD(target);
                     }
@@ -2435,17 +2356,8 @@ public class EditHUDScreen extends Screen {
                     getBackgroundMessage(target),
                     btn -> {
                         boolean nextVal = !target.getSettings().drawBackground;
-                        if (isMultiSelection) {
-                            List<HUDAction> acts = new ArrayList<>();
-                            for (AbstractHUD hud : selectedHUDs) {
-                                HUDAction act = onDrawBackgroundChanged(hud, nextVal);
-                                if (act != null) acts.add(act);
-                            }
-                            if (!acts.isEmpty()) history.execute(new CompositeAction(acts));
-                        } else {
-                            HUDAction act = onDrawBackgroundChanged(target, nextVal);
-                            if (act != null) history.execute(act);
-                        }
+                        HUDAction act = onDrawBackgroundChanged(target, nextVal);
+                        if (act != null) history.execute(act);
                         btn.setMessage(getBackgroundMessage(target));
                         updateFieldsFromSelectedHUD();
                     }
@@ -2457,17 +2369,8 @@ public class EditHUDScreen extends Screen {
                     getShadowMessage(target),
                     btn -> {
                         boolean nextVal = !target.getSettings().drawTextShadow;
-                        if (isMultiSelection) {
-                            List<HUDAction> acts = new ArrayList<>();
-                            for (AbstractHUD hud : selectedHUDs) {
-                                HUDAction act = onDrawTextShadowChanged(hud, nextVal);
-                                if (act != null) acts.add(act);
-                            }
-                            if (!acts.isEmpty()) history.execute(new CompositeAction(acts));
-                        } else {
-                            HUDAction act = onDrawTextShadowChanged(target, nextVal);
-                            if (act != null) history.execute(act);
-                        }
+                        HUDAction act = onDrawTextShadowChanged(target, nextVal);
+                        if (act != null) history.execute(act);
                         btn.setMessage(getShadowMessage(target));
                         updateFieldsFromSelectedHUD();
                     }
@@ -2522,7 +2425,7 @@ public class EditHUDScreen extends Screen {
             int currentY = y + 25;
             int widgetW = contextMenuWidth - 20;
 
-            EditBox searchBox = new EditBox(CLIENT.font, x + 10, currentY, widgetW, 18, Component.literal("Search..."));
+            EditBox searchBox = new EditBox(CLIENT.font, x + 10, currentY, widgetW, 18, Component.translatable("lryq_hud.menu.search"));
             searchBox.setValue(contextMenuSearchFilter);
             searchBox.setResponder(text -> {
                 contextMenuSearchFilter = text;

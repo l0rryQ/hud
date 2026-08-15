@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 public class VanillaTracker {
     public static void begin(GuiGraphicsExtractor context, String hudId, float defaultX, float defaultY) {
         AbstractHUD hud = HUDComponent.getInstance().getHUD(hudId);
-        if (hud != null && hud.getSettings().shouldRender) {
+        if (hud != null) {
             float scale = hud.getScale();
             float x = hud.getX();
             float y = hud.getY();
@@ -21,7 +21,7 @@ public class VanillaTracker {
 
     public static void end(GuiGraphicsExtractor context, String hudId) {
         AbstractHUD hud = HUDComponent.getInstance().getHUD(hudId);
-        if (hud != null && hud.getSettings().shouldRender) {
+        if (hud != null) {
             context.pose().popMatrix();
         }
     }

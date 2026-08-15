@@ -18,7 +18,7 @@ public class VanillaActionBarHUD extends AbstractHUD {
 
     @Override
     public boolean collectHUDInformation() {
-        setWidthHeight(200, 15);
+        setWidthHeight(400, 30);
         return true;
     }
 
