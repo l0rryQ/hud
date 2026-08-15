@@ -9,11 +9,11 @@ public class VanillaTracker {
         AbstractHUD hud = HUDComponent.getInstance().getHUD(hudId);
         if (hud != null) {
             float scale = hud.getScale();
-            float x = hud.getX();
-            float y = hud.getY();
+            float offsetX = hud.getSettings().x;
+            float offsetY = hud.getSettings().y;
 
             context.pose().pushMatrix();
-            context.pose().translate(x, y);
+            context.pose().translate(defaultX + offsetX, defaultY + offsetY);
             context.pose().scale(scale, scale);
             context.pose().translate(-defaultX, -defaultY);
         }

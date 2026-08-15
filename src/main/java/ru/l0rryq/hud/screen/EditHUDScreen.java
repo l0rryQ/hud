@@ -46,6 +46,7 @@ public class EditHUDScreen extends Screen {
     public static final int SQUARE_WIDGET_LENGTH = 20;
     public static final int GAP = 5;
     public static final boolean isMac = System.getProperty("os.name").toLowerCase().contains("mac");
+    public static boolean showVanillaHUDsInEditScreen = true;
 
     public Screen parent;
 
@@ -327,10 +328,29 @@ public class EditHUDScreen extends Screen {
         );
 
         int yBottom = this.height - SQUARE_WIDGET_LENGTH - GAP;
+        int terminatorWidth = 70;
 
-        int wConfigScreen = SQUARE_WIDGET_LENGTH;
-        int hConfigScreen = wConfigScreen;
-        int xConfigScreenButton = CENTER_X + (GAP/2);
+        int totalBottomRowWidth = 70 + GAP + SQUARE_WIDGET_LENGTH + GAP + SQUARE_WIDGET_LENGTH + GAP + 70 + GAP + 110;
+        int xStart = (this.width - totalBottomRowWidth) / 2;
+
+        int xCancelButton = xStart;
+        Button cancelButton = Button.builder(
+                Component.translatable("lryq_hud.screen.button.cancel"),
+                button -> onClose()
+        ).bounds(xCancelButton, yBottom, 70, WIDGET_HEIGHT).build();
+
+        int xHelpButton = xCancelButton + 70 + GAP;
+        Button helpButton = Button.builder(
+                Component.translatable("lryq_hud.screen.button.help"),
+                button -> {
+                    helpWidget.setActive(!helpWidget.isActive());
+                }
+        )
+                .tooltip(Tooltip.create(Component.translatable("lryq_hud.screen.tooltip.help")))
+                .bounds(xHelpButton, yBottom, SQUARE_WIDGET_LENGTH, SQUARE_WIDGET_LENGTH)
+                .build();
+
+        int xConfigScreenButton = xHelpButton + SQUARE_WIDGET_LENGTH + GAP;
         Button configScreenButton = Button.builder(
                         Component.translatable("lryq_hud.screen.button.config"),
                         button -> {
@@ -342,22 +362,10 @@ public class EditHUDScreen extends Screen {
                         }
                 )
                 .tooltip(Tooltip.create(Component.translatable("lryq_hud.screen.tooltip.config")))
-                .bounds(xConfigScreenButton, yBottom, wConfigScreen, hConfigScreen)
+                .bounds(xConfigScreenButton, yBottom, SQUARE_WIDGET_LENGTH, SQUARE_WIDGET_LENGTH)
                 .build();
 
-        int xHelpButton = CENTER_X - (GAP/2) - SQUARE_WIDGET_LENGTH;
-        Button helpButton = Button.builder(
-                Component.translatable("lryq_hud.screen.button.help"),
-                button -> {
-                    helpWidget.setActive(!helpWidget.isActive());
-                }
-        )
-                .tooltip(Tooltip.create(Component.translatable("lryq_hud.screen.tooltip.help")))
-                .bounds(xHelpButton, yBottom, SQUARE_WIDGET_LENGTH, SQUARE_WIDGET_LENGTH)
-                .build();
-
-        int terminatorWidth = 70;
-        int xSaveAndQuitButton = xConfigScreenButton + GAP + SQUARE_WIDGET_LENGTH;
+        int xSaveAndQuitButton = xConfigScreenButton + SQUARE_WIDGET_LENGTH + GAP;
         Button saveAndQuitButton = Button.builder(
                 Component.translatable("lryq_hud.screen.button.save_quit"),
                 button -> {
@@ -365,12 +373,15 @@ public class EditHUDScreen extends Screen {
                     onEditHUDClose();
         }).bounds(xSaveAndQuitButton, yBottom, terminatorWidth, WIDGET_HEIGHT).build();
 
-        int xCancelButton = xHelpButton - GAP - terminatorWidth;
-
-        Button cancelButton = Button.builder(
-                Component.translatable("lryq_hud.screen.button.cancel"),
-                button -> onClose()
-        ).bounds(xCancelButton, yBottom, terminatorWidth, WIDGET_HEIGHT).build();
+        int xToggleVanilla = xSaveAndQuitButton + terminatorWidth + GAP;
+        Button toggleVanillaButton = Button.builder(
+                Component.translatable("lryq_hud.menu.toggle_vanilla", showVanillaHUDsInEditScreen ? Component.translatable("lryq_hud.screen.status.on") : Component.translatable("lryq_hud.screen.status.off")),
+                button -> {
+                    showVanillaHUDsInEditScreen = !showVanillaHUDsInEditScreen;
+                    button.setMessage(Component.translatable("lryq_hud.menu.toggle_vanilla", showVanillaHUDsInEditScreen ? Component.translatable("lryq_hud.screen.status.on") : Component.translatable("lryq_hud.screen.status.off")));
+                }
+        ).bounds(xToggleVanilla, yBottom, 110, WIDGET_HEIGHT).build();
+        addRenderableWidget(toggleVanillaButton);
 
         // special case: grouped hud buttons
 
