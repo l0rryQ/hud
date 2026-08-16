@@ -130,12 +130,28 @@ public class HUDComponent {
     public void loadActiveHUDsFromConfig() {
         HUDList hudConfig = Main.settings.hudList;
 
+        String[] vanillaIds = {
+            "VANILLA_ACTION_BAR",
+            "VANILLA_BOSS_BAR",
+            "VANILLA_CLOSED_CAPTION",
+            "VANILLA_HOTBAR_GROUP",
+            "VANILLA_PLAYER_LIST",
+            "VANILLA_SCOREBOARD"
+        };
+        for (String id : vanillaIds) {
+            if (!hudConfig.individualHudIds.contains(id)) {
+                hudConfig.individualHudIds.add(id);
+            }
+        }
+
         individualHUDs.clear();
 
         for (String id : hudConfig.individualHudIds) {
             AbstractHUD hud = hudMap.get(id);
-            hud.setGroupId(null);
-            individualHUDs.put(id, hud);
+            if (hud != null) {
+                hud.setGroupId(null);
+                individualHUDs.put(id, hud);
+            }
         }
 
         groupedHUDs.clear();
