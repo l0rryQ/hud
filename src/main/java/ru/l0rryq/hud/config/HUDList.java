@@ -69,7 +69,6 @@ public class HUDList {
 
 
     public void onConfigSaved() {
-
         // remove invalid id if user acts silly and do something silly and everything became silly
         Set<String> validHudIds = Arrays.stream(HUDId.values())
                 .map(HUDId::toString)

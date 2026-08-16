@@ -103,12 +103,6 @@ public class HUDComponent {
         registerHUD(new PositiveEffectHUD());
         registerHUD(new NegativeEffectHUD());
 
-        registerHUD(new ru.l0rryq.hud.hud.implementation.vanilla.VanillaActionBarHUD());
-        registerHUD(new ru.l0rryq.hud.hud.implementation.vanilla.VanillaBossBarHUD());
-        registerHUD(new ru.l0rryq.hud.hud.implementation.vanilla.VanillaClosedCaptionHUD());
-        registerHUD(new ru.l0rryq.hud.hud.implementation.vanilla.VanillaHotbarGroupHUD());
-        registerHUD(new ru.l0rryq.hud.hud.implementation.vanilla.VanillaPlayerListHUD());
-        registerHUD(new ru.l0rryq.hud.hud.implementation.vanilla.VanillaScoreboardHUD());
     }
 
     public Map<String, AbstractHUD> getHudMap() {
@@ -130,28 +124,12 @@ public class HUDComponent {
     public void loadActiveHUDsFromConfig() {
         HUDList hudConfig = Main.settings.hudList;
 
-        String[] vanillaIds = {
-            "VANILLA_ACTION_BAR",
-            "VANILLA_BOSS_BAR",
-            "VANILLA_CLOSED_CAPTION",
-            "VANILLA_HOTBAR_GROUP",
-            "VANILLA_PLAYER_LIST",
-            "VANILLA_SCOREBOARD"
-        };
-        for (String id : vanillaIds) {
-            if (!hudConfig.individualHudIds.contains(id)) {
-                hudConfig.individualHudIds.add(id);
-            }
-        }
-
         individualHUDs.clear();
 
         for (String id : hudConfig.individualHudIds) {
             AbstractHUD hud = hudMap.get(id);
-            if (hud != null) {
-                hud.setGroupId(null);
-                individualHUDs.put(id, hud);
-            }
+            hud.setGroupId(null);
+            individualHUDs.put(id, hud);
         }
 
         groupedHUDs.clear();
