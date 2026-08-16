@@ -2488,12 +2488,16 @@ public class EditHUDScreen extends Screen {
                             hudToSpawn.getSettings().shouldRender = true;
                             hudToSpawn.getSettings().textTemplate = "";
 
+                            float guiScale = CLIENT.getWindow().getGuiScale();
+                            int fbX = (int) (contextMenuX * guiScale);
+                            int fbY = (int) (contextMenuY * guiScale);
+
                             hudToSpawn.getSettings().originX = ScreenAlignmentX.LEFT;
                             hudToSpawn.getSettings().originY = ScreenAlignmentY.TOP;
                             hudToSpawn.getSettings().growthDirectionX = GrowthDirectionX.RIGHT;
                             hudToSpawn.getSettings().growthDirectionY = GrowthDirectionY.DOWN;
-                            hudToSpawn.getSettings().x = contextMenuX;
-                            hudToSpawn.getSettings().y = contextMenuY;
+                            hudToSpawn.getSettings().x = fbX;
+                            hudToSpawn.getSettings().y = fbY;
                             hudToSpawn.update();
 
                             updateHUDAlignment(hudToSpawn);

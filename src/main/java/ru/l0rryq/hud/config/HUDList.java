@@ -69,6 +69,23 @@ public class HUDList {
 
 
     public void onConfigSaved() {
+        // Ensure vanilla elements are always present and never hidden or grouped
+        String[] vanillaIds = {
+            "VANILLA_ACTION_BAR",
+            "VANILLA_BOSS_BAR",
+            "VANILLA_CLOSED_CAPTION",
+            "VANILLA_DEBUG_SCREEN",
+            "VANILLA_HOTBAR_GROUP",
+            "VANILLA_PLAYER_LIST",
+            "VANILLA_SCOREBOARD",
+            "VANILLA_TOAST_MESSAGE"
+        };
+        for (String id : vanillaIds) {
+            if (!individualHudIds.contains(id)) {
+                individualHudIds.add(id);
+            }
+        }
+
         // remove invalid id if user acts silly and do something silly and everything became silly
         Set<String> validHudIds = Arrays.stream(HUDId.values())
                 .map(HUDId::toString)
@@ -102,6 +119,17 @@ public class HUDList {
         for (Map.Entry<String, Integer> entry : appearanceMap.entrySet()) {
             String id = entry.getKey();
             int count = entry.getValue();
+
+            // Prevent vanilla elements from being in grouped HUDs
+            if (id.startsWith("VANILLA_")) {
+                for (GroupedHUDSettings group : groupedHuds) {
+                    group.hudIds.removeIf(hudId -> hudId.equals(id));
+                }
+                if (!individualHudIds.contains(id)) {
+                    individualHudIds.add(id);
+                }
+                continue;
+            }
 
             if (count == 1) continue;
 

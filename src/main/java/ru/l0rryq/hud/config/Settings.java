@@ -230,8 +230,34 @@ public class Settings implements ConfigData{
         public ClockInGameSettings inGameSetting = new ClockInGameSettings();
     }
 
+    // Vanilla HUD elements positioning settings
+    @ConfigEntry.Gui.Excluded
+    public BaseHUDSettings vanillaActionBar = new BaseHUDSettings(true, 0, -68, ScreenAlignmentX.CENTER, ScreenAlignmentY.BOTTOM, GrowthDirectionX.CENTER, GrowthDirectionY.UP, false);
+    @ConfigEntry.Gui.Excluded
+    public BaseHUDSettings vanillaBossBar = new BaseHUDSettings(true, 0, 12, ScreenAlignmentX.CENTER, ScreenAlignmentY.TOP, GrowthDirectionX.CENTER, GrowthDirectionY.DOWN, false);
+    @ConfigEntry.Gui.Excluded
+    public BaseHUDSettings vanillaClosedCaption = new BaseHUDSettings(true, -10, -110, ScreenAlignmentX.RIGHT, ScreenAlignmentY.BOTTOM, GrowthDirectionX.LEFT, GrowthDirectionY.UP, false);
+    @ConfigEntry.Gui.Excluded
+    public BaseHUDSettings vanillaDebugScreen = new BaseHUDSettings(true, 2, 2, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN, false);
+    @ConfigEntry.Gui.Excluded
+    public BaseHUDSettings vanillaHotbarGroup = new BaseHUDSettings(true, 0, -22, ScreenAlignmentX.CENTER, ScreenAlignmentY.BOTTOM, GrowthDirectionX.CENTER, GrowthDirectionY.UP, false);
+    @ConfigEntry.Gui.Excluded
+    public BaseHUDSettings vanillaPlayerList = new BaseHUDSettings(true, 0, 10, ScreenAlignmentX.CENTER, ScreenAlignmentY.TOP, GrowthDirectionX.CENTER, GrowthDirectionY.DOWN, false);
+    @ConfigEntry.Gui.Excluded
+    public BaseHUDSettings vanillaScoreboard = new BaseHUDSettings(true, -10, 0, ScreenAlignmentX.RIGHT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.LEFT, GrowthDirectionY.MIDDLE, false);
+    @ConfigEntry.Gui.Excluded
+    public BaseHUDSettings vanillaToastMessage = new BaseHUDSettings(true, -160, 0, ScreenAlignmentX.RIGHT, ScreenAlignmentY.TOP, GrowthDirectionX.LEFT, GrowthDirectionY.DOWN, false);
+
     @Override
     public void validatePostLoad() {
+        if (vanillaActionBar == null) vanillaActionBar = new BaseHUDSettings(true, 0, -68, ScreenAlignmentX.CENTER, ScreenAlignmentY.BOTTOM, GrowthDirectionX.CENTER, GrowthDirectionY.UP, false);
+        if (vanillaBossBar == null) vanillaBossBar = new BaseHUDSettings(true, 0, 12, ScreenAlignmentX.CENTER, ScreenAlignmentY.TOP, GrowthDirectionX.CENTER, GrowthDirectionY.DOWN, false);
+        if (vanillaClosedCaption == null) vanillaClosedCaption = new BaseHUDSettings(true, -10, -110, ScreenAlignmentX.RIGHT, ScreenAlignmentY.BOTTOM, GrowthDirectionX.LEFT, GrowthDirectionY.UP, false);
+        if (vanillaDebugScreen == null) vanillaDebugScreen = new BaseHUDSettings(true, 2, 2, ScreenAlignmentX.LEFT, ScreenAlignmentY.TOP, GrowthDirectionX.RIGHT, GrowthDirectionY.DOWN, false);
+        if (vanillaHotbarGroup == null) vanillaHotbarGroup = new BaseHUDSettings(true, 0, -22, ScreenAlignmentX.CENTER, ScreenAlignmentY.BOTTOM, GrowthDirectionX.CENTER, GrowthDirectionY.UP, false);
+        if (vanillaPlayerList == null) vanillaPlayerList = new BaseHUDSettings(true, 0, 10, ScreenAlignmentX.CENTER, ScreenAlignmentY.TOP, GrowthDirectionX.CENTER, GrowthDirectionY.DOWN, false);
+        if (vanillaScoreboard == null) vanillaScoreboard = new BaseHUDSettings(true, -10, 0, ScreenAlignmentX.RIGHT, ScreenAlignmentY.MIDDLE, GrowthDirectionX.LEFT, GrowthDirectionY.MIDDLE, false);
+        if (vanillaToastMessage == null) vanillaToastMessage = new BaseHUDSettings(true, -160, 0, ScreenAlignmentX.RIGHT, ScreenAlignmentY.TOP, GrowthDirectionX.LEFT, GrowthDirectionY.DOWN, false);
 
         if (generalSettings.inGameSettings == null)
             generalSettings.inGameSettings = new GeneralSettings.InGameHUDSettings();
