@@ -67,20 +67,36 @@ public class MixinInGameHUD {
     }
 
     @org.spongepowered.asm.mixin.injection.Inject(
-            method = "extractItemHotbar",
+            method = "extractDebugOverlay",
             at = @At("HEAD")
     )
-    private void lryq$beginItemHotbar(GuiGraphicsExtractor context, net.minecraft.client.DeltaTracker deltaTracker, org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
+    private void lryq$beginDebugOverlay(GuiGraphicsExtractor context, org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
+        ru.l0rryq.hud.helper.VanillaTracker.begin(context, "VANILLA_DEBUG_SCREEN", 2.0f, 2.0f);
+    }
+
+    @org.spongepowered.asm.mixin.injection.Inject(
+            method = "extractDebugOverlay",
+            at = @At("RETURN")
+    )
+    private void lryq$endDebugOverlay(GuiGraphicsExtractor context, org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
+        ru.l0rryq.hud.helper.VanillaTracker.end(context, "VANILLA_DEBUG_SCREEN");
+    }
+
+    @org.spongepowered.asm.mixin.injection.Inject(
+            method = "extractHotbarAndDecorations",
+            at = @At("HEAD")
+    )
+    private void lryq$beginHotbarAndDecorations(GuiGraphicsExtractor context, net.minecraft.client.DeltaTracker deltaTracker, org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
         int screenWidth = net.minecraft.client.Minecraft.getInstance().getWindow().getGuiScaledWidth();
         int screenHeight = net.minecraft.client.Minecraft.getInstance().getWindow().getGuiScaledHeight();
         ru.l0rryq.hud.helper.VanillaTracker.begin(context, "VANILLA_HOTBAR_GROUP", (screenWidth / 2.0f) - 91.0f, screenHeight - 22.0f);
     }
 
     @org.spongepowered.asm.mixin.injection.Inject(
-            method = "extractItemHotbar",
+            method = "extractHotbarAndDecorations",
             at = @At("RETURN")
     )
-    private void lryq$endItemHotbar(GuiGraphicsExtractor context, net.minecraft.client.DeltaTracker deltaTracker, org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
+    private void lryq$endHotbarAndDecorations(GuiGraphicsExtractor context, net.minecraft.client.DeltaTracker deltaTracker, org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
         ru.l0rryq.hud.helper.VanillaTracker.end(context, "VANILLA_HOTBAR_GROUP");
     }
 

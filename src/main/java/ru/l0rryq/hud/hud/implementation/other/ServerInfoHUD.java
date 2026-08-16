@@ -39,12 +39,11 @@ public class ServerInfoHUD extends AbstractHUD {
 
     @Override
     public boolean collectHUDInformation() {
-        boolean isEditScreen = CLIENT.gui.screen() instanceof ru.l0rryq.hud.screen.EditHUDScreen;
-        if (CLIENT.player == null && !isEditScreen) return false;
+        if (CLIENT.player == null) return false;
 
         boolean isSingleplayer = CLIENT.isLocalServer() || CLIENT.getCurrentServer() == null;
         if (isSingleplayer) {
-            if (SETTINGS.showOnlyOnServers && !isEditScreen) {
+            if (SETTINGS.showOnlyOnServers) {
                 return false;
             }
             if (CLIENT.getSingleplayerServer() != null && CLIENT.getSingleplayerServer().getWorldData() != null) {

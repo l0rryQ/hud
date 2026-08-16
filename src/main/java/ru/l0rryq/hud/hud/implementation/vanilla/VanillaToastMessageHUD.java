@@ -9,10 +9,10 @@ import ru.l0rryq.hud.hud.AbstractHUD;
 import ru.l0rryq.hud.hud.HUDId;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
-public class VanillaClosedCaptionHUD extends AbstractHUD {
+public class VanillaToastMessageHUD extends AbstractHUD {
 
-    public VanillaClosedCaptionHUD() {
-        super(ru.l0rryq.hud.Main.settings.vanillaClosedCaption);
+    public VanillaToastMessageHUD() {
+        super(ru.l0rryq.hud.Main.settings.vanillaToastMessage);
     }
 
     @Override
@@ -22,7 +22,7 @@ public class VanillaClosedCaptionHUD extends AbstractHUD {
 
     @Override
     public boolean collectHUDInformation() {
-        setWidthHeight(150, 60);
+        setWidthHeight(160, 32);
         return true;
     }
 
@@ -33,11 +33,11 @@ public class VanillaClosedCaptionHUD extends AbstractHUD {
 
     @Override
     public String getName() {
-        return "Closed Caption";
+        return "Toast Message";
     }
 
     @Override
     public String getId() {
-        return HUDId.VANILLA_CLOSED_CAPTION.toString();
+        return HUDId.VANILLA_TOAST_MESSAGE.toString();
     }
 }

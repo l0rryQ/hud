@@ -2,18 +2,20 @@ package ru.l0rryq.hud.helper;
 
 import ru.l0rryq.hud.hud.AbstractHUD;
 import ru.l0rryq.hud.hud.HUDComponent;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class VanillaTracker {
     public static void begin(GuiGraphicsExtractor context, String hudId, float defaultX, float defaultY) {
         AbstractHUD hud = HUDComponent.getInstance().getHUD(hudId);
         if (hud != null) {
+            float guiScale = (float) Minecraft.getInstance().getWindow().getGuiScale();
             float scale = hud.getScale();
-            float offsetX = hud.getSettings().x;
-            float offsetY = hud.getSettings().y;
+            float x = hud.getX() / guiScale;
+            float y = hud.getY() / guiScale;
 
             context.pose().pushMatrix();
-            context.pose().translate(defaultX + offsetX, defaultY + offsetY);
+            context.pose().translate(x, y);
             context.pose().scale(scale, scale);
             context.pose().translate(-defaultX, -defaultY);
         }
