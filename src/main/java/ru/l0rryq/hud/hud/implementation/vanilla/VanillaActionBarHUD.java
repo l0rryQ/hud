@@ -17,14 +17,20 @@ public class VanillaActionBarHUD extends AbstractHUD {
     }
 
     @Override
+    public float getScale() {
+        float s = getSettings().scale;
+        return s <= 0 ? 1.0f : s;
+    }
+
+    @Override
     public boolean collectHUDInformation() {
-        setWidthHeight(400, 30);
+        setWidthHeight(200, 15);
         return true;
     }
 
     @Override
     public boolean renderHUD(GuiGraphicsExtractor context, int x, int y, boolean drawBackground, boolean drawTextShadow) {
-        if (Minecraft.getInstance().gui.screen() instanceof ru.l0rryq.hud.screen.EditHUDScreen) {
+        if (ru.l0rryq.hud.screen.EditHUDScreen.showVanillaHUDsInEditScreen && Minecraft.getInstance().gui.screen() instanceof ru.l0rryq.hud.screen.EditHUDScreen) {
             int w = getWidth();
             int h = getHeight();
             context.fill(x, y, x + w, y + h, 0x60000000);
